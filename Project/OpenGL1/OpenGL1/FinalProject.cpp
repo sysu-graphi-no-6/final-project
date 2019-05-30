@@ -3,9 +3,10 @@
 #include <vector>
 #include "Light.h"
 #include "ResourceManager.h"
+#include "World.h"
 // ************************设定好的参数************************************
-const unsigned int windowsWidth = 2560;
-const unsigned int windowsHeight = 1440;
+const unsigned int windowsWidth = 1920;
+const unsigned int windowsHeight = 1080;
 const char* head = "Final Project";
 // 用于记录鼠标移动
 float deltaTime = 0.0f;
@@ -20,7 +21,7 @@ void escapePress(GLFWwindow *window, float& deltaTime);
 // 单例模式指针
 ResourceManager* manager = ResourceManager::getInstance();
 Camera* camera = Camera::getInstance();
-
+World* world = World::getInstance();
 int main()
 {
     // 初始化窗口
@@ -44,7 +45,7 @@ int main()
     // 加载着色器
     Shader shader("shadow.vs", "shadow.frag");
     Shader simpleDepthShader("shadow_mapping_depth.vs", "shadow_mapping_depth.frag");
-    Shader lampShader("spotLight.vs", "spotLight.frag");
+    //Shader lampShader("spotLight.vs", "spotLight.frag");
     Shader directionalLight("multipleLight.vs", "multipleLight.frag");
     manager->setAllTexture();
     
@@ -148,7 +149,8 @@ int main()
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        manager->RenderScene(simpleDepthShader, glm::vec3(1.0f, 3.0f, 2.0f),manager->GRASS);
+       // world->Render(simpleDepthShader);
+        /*manager->RenderScene(simpleDepthShader, glm::vec3(1.0f, 3.0f, 2.0f), manager->GRASS);*/
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glCullFace(GL_BACK);
@@ -181,8 +183,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
         // 画出物体
-        manager->RenderScene(shader, glm::vec3(1.0f, 3.0f, 2.0f), manager->GRASS);
-        manager->RenderScene(shader, glm::vec3(1.0f, 4.0f, 2.0f), manager->GRASS);
+        world->Render(shader);
         //// 画出光源
         //lampShader.use();
         //model = glm::translate(model, lightPos);
