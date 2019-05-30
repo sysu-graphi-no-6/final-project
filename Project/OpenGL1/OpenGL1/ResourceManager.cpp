@@ -4,43 +4,27 @@
 ResourceManager* ResourceManager::instance = NULL;
 
 void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir) {
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &cubeVBO);
-    // 根据方向渲染
-    glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-    if (dir == TOP) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(top), top, GL_STATIC_DRAW);
-    }
-    else if (dir == BOTTOM) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(bottom), bottom, GL_STATIC_DRAW);
-    }
-    else if (dir == FRONT) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(front), front, GL_STATIC_DRAW);
-    }
-    else if (dir == BACK) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(back), back, GL_STATIC_DRAW);
-    }
-    else if (dir == LEFT) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(left), left, GL_STATIC_DRAW);
-    }
-    else if (dir == RIGHT) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(right), right, GL_STATIC_DRAW);
-    }
-    // Link vertex attributes
-    glBindVertexArray(cubeVAO);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
+    if (dir == TOP) {
+        glBindVertexArray(cubeVAO_top);
+    }
+    else if (dir == BOTTOM) {
+        glBindVertexArray(cubeVAO_bottom);
+    }
+    else if (dir == FRONT) {
+        glBindVertexArray(cubeVAO_front);
+    }
+    else if (dir == BACK) {
+        glBindVertexArray(cubeVAO_back);
+    }
+    else if (dir == LEFT) {
+        glBindVertexArray(cubeVAO_left);
+    }
+    else if (dir == RIGHT) {
+        glBindVertexArray(cubeVAO_right);
+    }
     // Render Cube
-    glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
@@ -54,7 +38,7 @@ void ResourceManager::RenderCube(unsigned int texture) {
     RenderFace(texture, BACK);
 }
 
-unsigned int ResourceManager::loadTexture(GLchar* path)
+unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -65,28 +49,21 @@ unsigned int ResourceManager::loadTexture(GLchar* path)
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         stbi_image_free(data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        //glGenerateMipmap(GL_TEXTURE_2D);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
     else
     {
         std::cout << "Cubemap texture failed to load at path: " << path << std::endl;
         stbi_image_free(data);
     }
-    /* glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);*/
-    // Parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
     return textureID;
 }
 

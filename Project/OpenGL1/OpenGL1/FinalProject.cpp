@@ -56,6 +56,8 @@ int main()
 
     shader.setInt("diffuseTexture", 0);
     shader.setInt("shadowMap", 1);
+
+    
     // ¹âÔ´VAO
     /*unsigned int lightVAO;
     glGenVertexArrays(1, &lightVAO);
@@ -97,7 +99,7 @@ int main()
     glDrawBuffer(GL_NONE);
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    manager->InitCube();
     // äÖÈ¾Ìì¿ÕºÐ
     manager->InitSky();
 
@@ -149,7 +151,7 @@ int main()
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-       // world->Render(simpleDepthShader);
+        world->Render(simpleDepthShader);
         /*manager->RenderScene(simpleDepthShader, glm::vec3(1.0f, 3.0f, 2.0f), manager->GRASS);*/
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -178,6 +180,7 @@ int main()
         shader.setVec3("viewPos", camera->Position);
         shader.setVec3("lightPos", lightPos);
         shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
+        
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, depthMap);
