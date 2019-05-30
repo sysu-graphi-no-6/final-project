@@ -1,7 +1,7 @@
 #include "Initial.h"
 #include "Shader.h"
 #include <vector>
-#include "Skybox.h"
+#include "LoadTexture.h"
 #include "Light.h"
 #define orthoType 0
 #define perspectiveType 1
