@@ -6,36 +6,7 @@
 */
 Shader::Shader(string vertexPath, string fragmentPath)
 {
-    // 读取文件
-    string vCode = loadFile(vertexPath);
-    string fCode = loadFile(fragmentPath);
-    const char* vShaderCode = vCode.c_str();
-    const char* fShaderCode = fCode.c_str();
-
-    unsigned int vertex, fragment;
-   /* cout << "test:" << endl << vShaderCode << endl;*/
-
-    // 顶点着色器
-    vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
-    errDetect(vertex, GL_COMPILE_STATUS);
-
-    // 片段着色器
-    fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
-    errDetect(fragment, GL_COMPILE_STATUS);
-
-    // 编译着色器
-    program = glCreateProgram();
-    glAttachShader(program, vertex);
-    glAttachShader(program, fragment);
-    glLinkProgram(program);
-    errDetect(program, GL_LINK_STATUS);
-    // 不必要时删除着色器
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    setText(vertexPath, fragmentPath);
 }
 /**
 * @brief 使用着色器
@@ -135,4 +106,37 @@ void Shader::setVec3(const std::string &name, float value1, float value2, float 
 
 void Shader::setVec3(const std::string &name, glm::vec3 vec) const {
     glUniform3f(glGetUniformLocation(program, name.c_str()), vec.x, vec.y, vec.z);
+}
+
+void Shader::setText(string vertexPath, string fragmentPath) {
+    // 读取文件
+    string vCode = loadFile(vertexPath);
+    string fCode = loadFile(fragmentPath);
+    const char* vShaderCode = vCode.c_str();
+    const char* fShaderCode = fCode.c_str();
+
+    unsigned int vertex, fragment;
+    /* cout << "test:" << endl << vShaderCode << endl;*/
+
+    // 顶点着色器
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vShaderCode, NULL);
+    glCompileShader(vertex);
+    errDetect(vertex, GL_COMPILE_STATUS);
+
+    // 片段着色器
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fShaderCode, NULL);
+    glCompileShader(fragment);
+    errDetect(fragment, GL_COMPILE_STATUS);
+
+    // 编译着色器
+    program = glCreateProgram();
+    glAttachShader(program, vertex);
+    glAttachShader(program, fragment);
+    glLinkProgram(program);
+    errDetect(program, GL_LINK_STATUS);
+    // 不必要时删除着色器
+    glDeleteShader(vertex);
+    glDeleteShader(fragment);
 }

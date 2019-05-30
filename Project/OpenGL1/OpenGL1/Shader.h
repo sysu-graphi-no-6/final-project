@@ -17,6 +17,9 @@ public:
     * @param fragmentPath 片段着色器路径
     */
     Shader(string vertexPath, string fragmentPath);
+    Shader(){}
+    // 根据着色器进行设置
+    void setText(string vertexPath, string fragmentPath);
     /**
     * @brief 使用着色器
     */

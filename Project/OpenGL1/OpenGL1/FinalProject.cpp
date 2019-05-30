@@ -1,19 +1,12 @@
 #include "Initial.h"
 #include "Shader.h"
 #include <vector>
-#include "LoadTexture.h"
 #include "Light.h"
-#define orthoType 0
-#define perspectiveType 1
-typedef int projectionModel;
+#include "ResourceManager.h"
 // ************************设定好的参数************************************
 const unsigned int windowsWidth = 2560;
 const unsigned int windowsHeight = 1440;
-const char* head = "Shadow";
-float radius = 4.0f;
-// 绑定，不多赘述
-unsigned int planeVAO;
-unsigned int cubeVAO, VBO;
+const char* head = "Final Project";
 // 用于记录鼠标移动
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -23,7 +16,11 @@ float lastFrame = 0.0f;
 * @param deltaTime 添加的新参数
 */
 void escapePress(GLFWwindow *window, float& deltaTime);
-void RenderScene(Shader &shader);
+
+// 单例模式指针
+ResourceManager* manager = ResourceManager::getInstance();
+Camera* camera = Camera::getInstance();
+
 int main()
 {
     // 初始化窗口
@@ -39,21 +36,18 @@ int main()
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-
+    
 
     // Setup Platform/Renderer bindings
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
-
     // 加载着色器
     Shader shader("shadow.vs", "shadow.frag");
     Shader simpleDepthShader("shadow_mapping_depth.vs", "shadow_mapping_depth.frag");
     Shader lampShader("spotLight.vs", "spotLight.frag");
     Shader directionalLight("multipleLight.vs", "multipleLight.frag");
-
-    // 天空盒
-    Shader skyboxShader("skybox.vs", "skybox.frag");
-    unsigned int cubemapTexture = loadCubemap(skybox_faces);
+    manager->setAllTexture();
+    
     // 设置平行光的参数
     directionalLight.use();
     directionalLight.setInt("material.diffuse", 0);
@@ -61,101 +55,17 @@ int main()
 
     shader.setInt("diffuseTexture", 0);
     shader.setInt("shadowMap", 1);
-    
-
-    // 顶点数据以及手工添加的法向量数据
-    float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    };
-
-    glGenVertexArrays(1, &cubeVAO);
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindVertexArray(cubeVAO);
-    
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    unsigned int lightVAO;
+    // 光源VAO
+    /*unsigned int lightVAO;
     glGenVertexArrays(1, &lightVAO);
     glBindVertexArray(lightVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    //// set floor
-    //GLfloat planeVertices[] = {
-    //    // Positions          // Normals       // Texture Coords
-    //    25.0f, -0.5f, 25.0f, 0.0f, 1.0f, 0.0f, 25.0f, 0.0f,
-    //    -25.0f, -0.5f, -25.0f, 0.0f, 1.0f, 0.0f, 0.0f, 25.0f,
-    //    -25.0f, -0.5f, 25.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-
-    //    25.0f, -0.5f, 25.0f, 0.0f, 1.0f, 0.0f, 25.0f, 0.0f,
-    //    25.0f, -0.5f, -25.0f, 0.0f, 1.0f, 0.0f, 25.0f, 25.0f,
-    //    -25.0f, -0.5f, -25.0f, 0.0f, 1.0f, 0.0f, 0.0f, 25.0f
-    //};
-
-    //// 建立平面的VAO
-    //unsigned int planeVBO;
-    //glGenVertexArrays(1, &planeVAO);
-    //glGenBuffers(1, &planeVBO);
-    //glBindVertexArray(planeVAO);
-    //glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    //glEnableVertexAttribArray(1);
-    //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(2);
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    //glBindVertexArray(0);
-
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);*/
+    
     // Configure depth map FBO 纹理高宽1024
     const GLuint SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     // 为渲染的深度贴图创建一个帧缓冲对象
@@ -187,24 +97,8 @@ int main()
     glReadBuffer(GL_NONE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // 进行投影模型的选择
-    projectionModel currentModel = orthoType;
-
-
-    // skybox VAO
-    unsigned int skyboxVAO, skyboxVBO;
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-    // 设置天空盒
-    skyboxShader.use();
-    skyboxShader.setInt("skybox", 0);
-
+    // 渲染天空盒
+    manager->InitSky();
 
     while (!glfwWindowShouldClose(window))
     {
@@ -240,16 +134,11 @@ int main()
 
         // 将为光源使用正交或是投视投影矩阵
         GLfloat near_plane = 1.0f, far_plane = 7.5f;
-        //if (currentModel == orthoType) {
-        //    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-        //}
-        //else {
-        //    
-        //}
+
         // 透视投影
         lightProjection = glm::perspective(100.0f, (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
 
-        lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        //lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
 
         simpleDepthShader.use();
@@ -259,7 +148,7 @@ int main()
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
-        RenderScene(simpleDepthShader);
+        manager->RenderScene(simpleDepthShader, glm::vec3(1.0f, 3.0f, 2.0f),manager->GRASS);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glCullFace(GL_BACK);
@@ -277,53 +166,40 @@ int main()
         glm::mat4 projection(1.0f);
         glm::mat4 view(1.0f);
         glm::mat4 model(1.0f);
-        view = glm::lookAt(Camera::getInstance()->Position, Camera::getInstance()->Position + Camera::getInstance()->Front, Camera::getInstance()->Up);
-        projection = glm::perspective(glm::radians(Camera::getInstance()->Zoom), (float)windowsWidth / (float)windowsHeight, 0.1f, 100.0f);
+        view = glm::lookAt(camera->Position, camera->Position + camera->Front, camera->Up);
+        projection = glm::perspective(glm::radians(camera->Zoom), (float)windowsWidth / (float)windowsHeight, 0.1f, 100.0f);
         directionalLight.setMat4("projection", projection);
         directionalLight.setMat4("view", view);
         // 设置可变的着色器参数
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
-        shader.setVec3("viewPos", Camera::getInstance()->Position);
+        shader.setVec3("viewPos", camera->Position);
         shader.setVec3("lightPos", lightPos);
         shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-        glActiveTexture(GL_TEXTURE1);
+        
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
         // 画出物体
-        RenderScene(shader);
-       /* printf("front: x:%f, y:%f, z:%f", Camera::getInstance()->Front.x, Camera::getInstance()->Front.y, Camera::getInstance()->Front.z);
-        printf("up: x:%f, y:%f, z:%f", Camera::getInstance()->Up.x, Camera::getInstance()->Up.y, Camera::getInstance()->Up.z);*/
-        // 画出光源
-        lampShader.use();
-        model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-        directionalLight.setMat4("model", model);
-        lampShader.setMat4("projection", projection);
-        lampShader.setMat4("model", model);
-        lampShader.setMat4("view", view);
+        manager->RenderScene(shader, glm::vec3(1.0f, 3.0f, 2.0f), manager->GRASS);
+        manager->RenderScene(shader, glm::vec3(1.0f, 4.0f, 2.0f), manager->GRASS);
+        //// 画出光源
+        //lampShader.use();
+        //model = glm::translate(model, lightPos);
+        //model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+        //directionalLight.setMat4("model", model);
+        //lampShader.setMat4("projection", projection);
+        //lampShader.setMat4("model", model);
+        //lampShader.setMat4("view", view);
 
-        glBindVertexArray(lightVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        //glBindVertexArray(lightVAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
 
        /* ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-*/
-
-        // 画出天空盒
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-        skyboxShader.use();
-        view = glm::mat4(glm::mat3(Camera::getInstance()->getViewMatrix())); // remove translation from the view matrix
-        skyboxShader.setMat4("view", view);
-        skyboxShader.setMat4("projection", projection);
-        // skybox cube
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        glDepthFunc(GL_LESS); // set depth function back to default
+*/   
+        // 渲染天空
+        manager->RenderSky(projection);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -346,32 +222,11 @@ void escapePress(GLFWwindow *window, float& deltaTime) {
         glfwSetWindowShouldClose(window, true);
     // 添加WSAD方向
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        Camera::getInstance()->ProcessKeyboard(FORWARD, deltaTime);
+        camera->ProcessKeyboard(FORWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        Camera::getInstance()->ProcessKeyboard(BACKWARD, deltaTime);
+        camera->ProcessKeyboard(BACKWARD, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        Camera::getInstance()->ProcessKeyboard(LEFT, deltaTime);
+        camera->ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        Camera::getInstance()->ProcessKeyboard(RIGHT, deltaTime);
-}
-
-void RenderScene(Shader &shader)
-{
-    //// 平面
-    glm::mat4 model(0.5f);
-    //shader.setMat4("model", model);
-    //shader.setVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f));
-    //glBindVertexArray(planeVAO);
-    //glDrawArrays(GL_TRIANGLES, 0, 6);
-    //glBindVertexArray(0);
-
-    // 物体1
-    model = glm::mat4(1.0f);
-    model = glm::rotate(model, 0.0f, glm::vec3(1.0f, 1.0f, 0.0f));
-    model = glm::translate(model, glm::vec3(1.0f, 3.0f, 2.0f));
-    shader.setMat4("model", model);
-    shader.setVec3("objectColor", glm::vec3(0.0f, 1.0f, 1.0f));
-    glBindVertexArray(cubeVAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+        camera->ProcessKeyboard(RIGHT, deltaTime);
 }
