@@ -1,6 +1,7 @@
 #pragma once
 #include "ResourceManager.h"
 #include "Shader.h"
+#include "PhysicsEngine.h"
 class World
 {
 public:

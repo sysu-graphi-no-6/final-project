@@ -209,22 +209,56 @@ int main()
 void escapePress(GLFWwindow *window, float& deltaTime) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-    // 添加WSAD方向
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+
+    // 单独进行处理提高运算速度
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        // WA
+        cout << "WA" << endl;
+        camera->ProcessKeyboard(FORWARD_LEFT, deltaTime);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
+        // W
+        cout << "W" << endl;
         camera->ProcessKeyboard(FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    }
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        // WD
+        cout << "WD" << endl;
+        camera->ProcessKeyboard(FORWARD_RIGHT, deltaTime);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        // SA
+        cout << "SA" << endl;
+        camera->ProcessKeyboard(BACKWARD_LEFT, deltaTime);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
+        // S
+        cout << "S" << endl;
         camera->ProcessKeyboard(BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        // SD
+        cout << "SD" << endl;
+        camera->ProcessKeyboard(BACKWARD_RIGHT, deltaTime);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
+        // A
+        cout << "A" << endl;
         camera->ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    }
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
+        // D
+        cout << "D" << endl;
         camera->ProcessKeyboard(RIGHT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+    }
+    else if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         isPress = true;
     }
-    if (isPress && glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {
+    else if (isPress && glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {
         isPress = false;
         camera->ProcessKeyboard(FLYSKY, deltaTime);
     }
+    // 跳跃单独处理
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         camera->ProcessKeyboard(JUMP, deltaTime);
 }

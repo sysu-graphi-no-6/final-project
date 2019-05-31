@@ -17,6 +17,10 @@ enum Direction {
     BACKWARD,
     LEFT,
     RIGHT,
+    FORWARD_LEFT,
+    FORWARD_RIGHT,
+    BACKWARD_LEFT,
+    BACKWARD_RIGHT,
     JUMP,
     FLYSKY
 };
@@ -71,88 +75,10 @@ public:
     * @param direction 输入的方向
     * @param deltaTIme 输入的时间
     */
-    void ProcessKeyboard(Direction direction, float deltaTime)
-    {
-        PhysicsEngine* engine = PhysicsEngine::getInstance();
+    void ProcessKeyboard(Direction direction, float deltaTime);
 
-        // 通过移动速度以及持续时间获得速度engine-
-        float cameraSpeed = MovementSpeed * deltaTime;
-        if (direction == FLYSKY) {
-            if(!flysky)cout << "飞天模式打开！" << endl;
-            else cout << "飞天模式关闭！" << endl;
-            flysky = !flysky;
-            return;
-        }
-        // 飞天模式是否开启
-        if (flysky) {
-            glm::vec3 afterMove;
-            // 进行四种方向的判断
-            if (direction == FORWARD)
-                afterMove = moveForward(Front * cameraSpeed);
-            if (direction == BACKWARD)
-                afterMove = moveBack(Front * cameraSpeed);
-            if (direction == LEFT)
-                afterMove = moveLeft(glm::normalize(glm::cross(Front, Up)) * cameraSpeed);
-            if (direction == RIGHT)
-                afterMove = moveRight(glm::normalize(glm::cross(Front, Up)) * cameraSpeed);
-            if (direction == JUMP)
-                afterMove = glm::vec3(Position.x, Position.y + 0.01f, Position.z);
-            Position = afterMove;
-        }
-        else {
-            float forwardVector = 0.0f, rightVector = 0.0f;
-            // 进行四种方向的判断
-            if (direction == FORWARD)
-                forwardVector += 2.0f;
-            if (direction == BACKWARD)
-                forwardVector -= 2.0f;
-            if (direction == LEFT)
-                rightVector -= 2.0f;
-            if (direction == RIGHT)
-                rightVector += 2.0f;
-            if (forwardVector != 0.0f || rightVector != 0.0f) {
-                //行走不改变y轴坐标
-                glm::mat4 vm = getViewMatrix();
-                glm::vec3 forward = glm::vec3(vm[0][2], 0.0f, vm[2][2]);
-                glm::vec3 strafe = glm::vec3(vm[0][0], 0.0f, vm[2][0]);
-
-                Position += (-forwardVector * forward + rightVector * strafe) * cameraSpeed;
-                targetPos = Position + (-forwardVector * forward + rightVector * strafe) * 1.5f;
-
-            }
-            if (direction == JUMP && !engine->isJumping) {
-                engine->InitJumping();
-            }
-        }
-        
-        
-    }
     // 进行当前位置的计算(弹跳期间)
-    void UpdatePositionEachSecond(float deltaTime) {
-       /* cout << Position.y << endl;*/
-        PhysicsEngine* engine = PhysicsEngine::getInstance();
-        if (engine->isJumping) {
-            // 利用重力加速度参数 (v + v0)/ 2 * t
-            if ((engine->currentSpeed > 0.0f && engine->currentHeight == 0.0f) || engine->currentHeight >= 0.0f) {
-                float nowSpeed = engine->currentSpeed + engine->gravityFactor * deltaTime;
-                engine->currentHeight += (nowSpeed + engine->currentSpeed) / 2.0f * deltaTime;
-                if (engine->currentHeight < 0.0f && engine->currentHeight > -0.1f) engine->currentHeight = 0.0f;
-                cout << "Height:" << (engine->currentHeight)<<"Speed"<<(engine->currentSpeed) << endl;
-                engine->currentSpeed = nowSpeed;
-                // 判断是否是上升阶段，如果是则加上相应高度，否则减去
-                if (engine->currentSpeed >= 0) {
-                    Position = glm::vec3(Position.x, Position.y + engine->currentHeight, Position.z);
-                }
-                else {
-                    Position = glm::vec3(Position.x, Position.y - engine->currentHeight, Position.z);
-                }
-            }
-            else if (engine->currentSpeed <= -(engine->initialSpeed)) {
-                engine->isJumping = false;
-                Position = glm::vec3(Position.x, floor(Position.y - engine->currentHeight), Position.z);
-             }
-        }
-    }
+    void UpdatePositionEachSecond(float deltaTime);
     /**
     * @brief 鼠标移动从而移动视图
     * @param xoffset x方向偏移量
@@ -208,32 +134,32 @@ private:
     * @brief 前向移动
     * @param distance 移动距离
     **/
-    glm::vec3 moveForward(glm::vec3 distance) {
-        return Position + distance;
+    glm::vec3 moveForward(glm::vec3 distance, glm::vec3 pos) {
+        return pos + distance;
     }
 
     /**
     * @brief 前后移动
     * @param distance 移动距离
     **/
-    glm::vec3 moveBack(glm::vec3 distance) {
-        return Position - distance;
+    glm::vec3 moveBack(glm::vec3 distance, glm::vec3 pos) {
+        return pos - distance;
     }
 
     /**
     * @brief 前右移动
     * @param distance 移动距离
     **/
-    glm::vec3 moveRight(glm::vec3 distance) {
-        return Position + distance;
+    glm::vec3 moveRight(glm::vec3 distance, glm::vec3 pos) {
+        return pos + distance;
     }
 
     /**
     * @brief 前左移动
     * @param distance 移动距离
     **/
-    glm::vec3 moveLeft(glm::vec3 distance) {
-        return Position - distance;
+    glm::vec3 moveLeft(glm::vec3 distance, glm::vec3 pos) {
+        return pos - distance;
     }
 
     static Camera* instance;

@@ -4,13 +4,17 @@ World* World::instance = NULL;
 
 void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
+    PhysicsEngine* engine = PhysicsEngine::getInstance();
     // 画出草地
     glm::vec3 grass_position[400];
     int grass_count = 400;
     int index = 0;
     for (int i = -10; i < 10; i++) {
         for (int j = -10; j < 10; j++) {
-            grass_position[index++] = glm::vec3((float)i, 0.0f, (float)j);
+            glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
+            grass_position[index++] = pos;
+            // map可以直接遍历所有行
+            engine->m[round(pos.y)].push_back(pos);
         }
     }
     SingleRender(shader, grass_count, grass_position, manager->GRASS);
@@ -21,25 +25,33 @@ void World::Render(Shader& shader) {
     index = 0;
     for (int i = -10; i < 10; i++) {
         for (int j = 1; j < 5; j++) {
-            brick_position[index++] = glm::vec3((float)i, (float)j, -10.0f);
+            glm::vec3 pos = glm::vec3((float)i, (float)j, -10.0f);
+            brick_position[index++] = pos;
+            engine->m[round(pos.y)].push_back(pos);
         }
     }
 
     for (int i = -10; i < 10; i++) {
         for (int j = 1; j < 5; j++) {
-            brick_position[index++] = glm::vec3(-10.0f, (float)j, (float)i);
+            glm::vec3 pos = glm::vec3(-10.0f, (float)j, (float)i);
+            brick_position[index++] = pos;
+            engine->m[round(pos.y)].push_back(pos);
         }
     }
 
     for (int i = -10; i < 10; i++) {
         for (int j = 1; j < 5; j++) {
-            brick_position[index++] = glm::vec3((float)i, (float)j, 9.0f);
+            glm::vec3 pos = glm::vec3((float)i, (float)j, 9.0f);
+            brick_position[index++] = pos;
+            engine->m[round(pos.y)].push_back(pos);
         }
     }
 
     for (int i = -10; i < 10; i++) {
         for (int j = 1; j < 5; j++) {
-            brick_position[index++] = glm::vec3(9.0f, (float)j, (float)i);
+            glm::vec3 pos = glm::vec3(9.0f, (float)j, (float)i);
+            brick_position[index++] = pos;
+            engine->m[round(pos.y)].push_back(pos);
         }
     }
     SingleRender(shader, brick_count, brick_position, manager->BRICK);
