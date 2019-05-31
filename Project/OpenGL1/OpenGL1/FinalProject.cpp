@@ -12,6 +12,8 @@ const char* head = "Final Project";
 // 用于记录鼠标移动
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+// 判断当前按键状态，用于选择是否是飞天模式
+bool isPress = false;
 /**
 * @brief 按下Esc退出
 * @param window 传入的窗口指针
@@ -186,6 +188,7 @@ int main()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 */   
         // 渲染天空
+        camera->UpdatePositionEachSecond(deltaTime);
         manager->RenderSky(projection);
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -198,7 +201,6 @@ int main()
     glfwTerminate();
     return 0;
 }
-
 /**
 * @brief 进行键盘按键的检测
 * @param window 窗口指针
@@ -216,4 +218,13 @@ void escapePress(GLFWwindow *window, float& deltaTime) {
         camera->ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera->ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        isPress = true;
+    }
+    if (isPress && glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {
+        isPress = false;
+        camera->ProcessKeyboard(FLYSKY, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        camera->ProcessKeyboard(JUMP, deltaTime);
 }
