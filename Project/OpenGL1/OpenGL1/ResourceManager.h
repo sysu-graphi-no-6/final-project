@@ -39,30 +39,30 @@ public:
         LEFT, RIGHT, TOP, BOTTOM, BACK, FRONT
     };
     // 在while循环中的渲染
-    void RenderScene(Shader &shader, glm::vec3 pos, BlockType blockType)
+    void RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount = 1)
     {
         // 物体1
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, pos);
+       // model = glm::translate(model, pos);
         shader.setMat4("model", model);
         // RenderCube(grass_top);
         switch (blockType)
         {
         case GRASS:
-            RenderFace(textureID["grass_top"], TOP);
-            RenderFace(textureID["dirt"], BOTTOM);
-            RenderFace(textureID["grass_side"], LEFT);
-            RenderFace(textureID["grass_side"], RIGHT);
-            RenderFace(textureID["grass_side"], FRONT);
-            RenderFace(textureID["grass_side"], BACK);
+            RenderFace(textureID["grass_top"], TOP, drawCount);
+            RenderFace(textureID["dirt"], BOTTOM, drawCount);
+            RenderFace(textureID["grass_side"], LEFT, drawCount);
+            RenderFace(textureID["grass_side"], RIGHT, drawCount);
+            RenderFace(textureID["grass_side"], FRONT, drawCount);
+            RenderFace(textureID["grass_side"], BACK, drawCount);
             break;
         default:
-            RenderFace(textureID["grass_top"], TOP);
-            RenderFace(textureID["dirt"], BOTTOM);
-            RenderFace(textureID["grass_side"], LEFT);
-            RenderFace(textureID["grass_side"], RIGHT);
-            RenderFace(textureID["grass_side"], FRONT);
-            RenderFace(textureID["grass_side"], BACK);
+            RenderFace(textureID["grass_top"], TOP, drawCount);
+            RenderFace(textureID["dirt"], BOTTOM, drawCount);
+            RenderFace(textureID["grass_side"], LEFT, drawCount);
+            RenderFace(textureID["grass_side"], RIGHT, drawCount);
+            RenderFace(textureID["grass_side"], FRONT, drawCount);
+            RenderFace(textureID["grass_side"], BACK, drawCount);
             break;
         }
 
@@ -71,6 +71,12 @@ public:
     void RenderCube(unsigned int texture);
     // 进行方块的初始化
     void InitCube() {
+
+        glGenBuffers(1, &instanceVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 1600, NULL, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         Single_InitCube(cubeVAO_top, cubeVBO_top, TOP);
         Single_InitCube(cubeVAO_bottom, cubeVBO_bottom, BOTTOM);
         Single_InitCube(cubeVAO_front, cubeVBO_front, FRONT);
@@ -110,12 +116,19 @@ public:
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+        glVertexAttribDivisor(3, 1);
+
         glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+       // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     //  渲染单独一面
-    void RenderFace(unsigned int texture, RenderDirection dir);
+    void RenderFace(unsigned int texture, RenderDirection dir, unsigned int drawCount);
 
     //----------天空盒-------------------------
     // 加载天空盒的纹理
@@ -124,12 +137,14 @@ public:
     void InitSky();
     // 进行天空盒的渲染
     void RenderSky(glm::mat4 projection);
-
+    unsigned int getInstanceVBO() {
+        return instanceVBO;
+    }
 
 private:
     // 材质和对应的id
     map<string, unsigned int> textureID;
-
+    unsigned int instanceVBO;
     static ResourceManager* instance;
     // --------------渲染部分-----------------------
     GLfloat front[48] = {

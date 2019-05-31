@@ -180,7 +180,12 @@ int main()
         shader.setVec3("viewPos", camera->Position);
         shader.setVec3("lightPos", lightPos);
         shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-        
+        // 物体反光特性设置
+        shader.setFloat("ambientStrength", 0.3f);
+        shader.setFloat("shininess", 64.0f);
+        shader.setFloat("diffuseFactor", 1.0f);
+        shader.setFloat("specularStrength", 1.0f);
+        shader.setVec3("lightColor", glm::vec3(1.0f));
         
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, depthMap);

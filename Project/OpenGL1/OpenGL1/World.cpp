@@ -3,17 +3,17 @@ World* World::instance = NULL;
 
 void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
-    // 渲染出草地
-    for (int i = 0; i < 20; ++i) {
-        for (int j = 0; j < 20; ++j) {
-            // 物体反光特性设置
-            shader.setFloat("ambientStrength", 0.3f);
-            shader.setFloat("shininess", 64.0f);
-            shader.setFloat("diffuseFactor", 1.0f);
-            shader.setFloat("specularStrength", 1.0f);
-            shader.setVec3("lightColor", glm::vec3(1.0f));
-            manager->RenderScene(shader, glm::vec3((float)i, 0.0f, (float)j), manager->GRASS);
-        }
-    }
-   // manager->RenderScene(shader, glm::vec3(1.0f, 3.0f, 2.0f), manager->GRASS);
+    glm::vec3 position[5] = {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(1.0f, 0.0f, 0.0f),
+    glm::vec3(2.0f, 0.0f, 0.0f),
+    glm::vec3(3.0f, 0.0f, 0.0f),
+    glm::vec3(4.0f, 0.0f, 0.0f),
+
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, manager->getInstanceVBO());
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * 5, &position[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+   manager->RenderScene(shader, manager->GRASS, 5);
 }

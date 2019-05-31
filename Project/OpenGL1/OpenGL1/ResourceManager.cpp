@@ -3,7 +3,7 @@
 #include "stb_image.h"
 ResourceManager* ResourceManager::instance = NULL;
 
-void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir) {
+void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir, unsigned int drawCount) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
     if (dir == TOP) {
@@ -25,17 +25,17 @@ void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir) {
         glBindVertexArray(cubeVAO_right);
     }
     // Render Cube
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, drawCount);
     glBindVertexArray(0);
 }
 
 void ResourceManager::RenderCube(unsigned int texture) {
-    RenderFace(texture, TOP);
-    RenderFace(texture, BOTTOM);
-    RenderFace(texture, LEFT);
-    RenderFace(texture, RIGHT);
-    RenderFace(texture, FRONT);
-    RenderFace(texture, BACK);
+    RenderFace(texture, TOP, 1);
+    RenderFace(texture, BOTTOM, 1);
+    RenderFace(texture, LEFT, 1);
+    RenderFace(texture, RIGHT, 1);
+    RenderFace(texture, FRONT, 1);
+    RenderFace(texture, BACK, 1);
 }
 
 unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)
