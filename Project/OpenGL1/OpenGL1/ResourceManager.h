@@ -6,7 +6,7 @@
 #include <string>
 #include <map>
 using namespace std;
-
+#define MAX_BLOCK 6400
 /*进行资源管理，比如画出立方体等*/
 class ResourceManager {
 public:
@@ -23,7 +23,7 @@ public:
     // ----------纹理类-----------------------
     // 方块种类
     enum BlockType {
-        GRASS
+        GRASS, BRICK
     };
     // 加载纹理
     unsigned int loadTexture(GLchar* path, unsigned int format);
@@ -31,6 +31,7 @@ public:
         textureID["grass_side"] = loadTexture("resource/blocks/grass_path_side.png", GL_RGBA);
         textureID["grass_top"] = loadTexture("resource/blocks/grass_path_top.png", GL_RGB);
         textureID["dirt"] = loadTexture("resource/blocks/dirt.png", GL_RGB);
+        textureID["brick"] = loadTexture("resource/blocks/brick.png", GL_RGB);
     }
     //----------------渲染----------------------------
     // 选择渲染的方向
@@ -56,6 +57,9 @@ public:
             RenderFace(textureID["grass_side"], FRONT, drawCount);
             RenderFace(textureID["grass_side"], BACK, drawCount);
             break;
+        case BRICK:
+            RenderCube(textureID["brick"], drawCount);
+            break;
         default:
             RenderFace(textureID["grass_top"], TOP, drawCount);
             RenderFace(textureID["dirt"], BOTTOM, drawCount);
@@ -68,13 +72,13 @@ public:
 
     }
     // 渲染整个方块
-    void RenderCube(unsigned int texture);
+    void RenderCube(unsigned int texture, unsigned int drawCount = 1);
     // 进行方块的初始化
     void InitCube() {
-
+        // 最大支持40 * 40
         glGenBuffers(1, &instanceVBO);
         glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 1600, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * MAX_BLOCK, NULL, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         Single_InitCube(cubeVAO_top, cubeVBO_top, TOP);

@@ -15,6 +15,8 @@ public:
     }
 
     void Render(Shader& shader);
+    // µ¥¶À½øĞĞäÖÈ¾
+    void SingleRender(Shader& shader, int count, glm::vec3* position, ResourceManager::BlockType block);
 
 private:
     static World* instance;

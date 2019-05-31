@@ -29,13 +29,13 @@ void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir, unsi
     glBindVertexArray(0);
 }
 
-void ResourceManager::RenderCube(unsigned int texture) {
-    RenderFace(texture, TOP, 1);
-    RenderFace(texture, BOTTOM, 1);
-    RenderFace(texture, LEFT, 1);
-    RenderFace(texture, RIGHT, 1);
-    RenderFace(texture, FRONT, 1);
-    RenderFace(texture, BACK, 1);
+void ResourceManager::RenderCube(unsigned int texture, unsigned int drawCount) {
+    RenderFace(texture, TOP, drawCount);
+    RenderFace(texture, BOTTOM, drawCount);
+    RenderFace(texture, LEFT, drawCount);
+    RenderFace(texture, RIGHT, drawCount);
+    RenderFace(texture, FRONT, drawCount);
+    RenderFace(texture, BACK, drawCount);
 }
 
 unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)

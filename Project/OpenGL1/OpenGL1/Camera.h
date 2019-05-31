@@ -21,9 +21,9 @@ public:
 
     // 属性值
     // 相机的位置
-    glm::vec3 Position = glm::vec3(4.7f, 2.6f, 11.4f);
+    glm::vec3 Position = glm::vec3(0.0f, 1.0f, 1.0f);
     // 相机的前向量
-    glm::vec3 Front = glm::vec3(-0.37f, -0.03f, -9.28f);
+    glm::vec3 Front = glm::vec3(0.0f, 0.0f, 0.0f);
     // 相机的上向量
     glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
     // 相机的右向量
