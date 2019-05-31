@@ -31,7 +31,7 @@ public:
 
     // 属性值
     // 相机的位置
-    glm::vec3 Position = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 Position = glm::vec3(0.0f, 2.0f, 0.0f);
     // 相机的前向量
     glm::vec3 Front = glm::vec3(1.0f, 0.0f, 0.0f);
     // 相机的上向量
@@ -126,6 +126,12 @@ public:
     glm::mat4 getViewMatrix()
     {
         return glm::lookAt(Position, Position + Front, Up);
+    }
+
+    // 保留若干位小数
+    static float getFloat(float input, int n) {
+
+        return (float)(round(input * pow(10, n))) / (float)(pow(10, n));
     }
 
 

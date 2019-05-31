@@ -6,12 +6,20 @@ void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
     PhysicsEngine* engine = PhysicsEngine::getInstance();
     // 画出草地
-    glm::vec3 grass_position[400];
-    int grass_count = 400;
+    glm::vec3 grass_position[460];
+    int grass_count = 460;
     int index = 0;
     for (int i = -10; i < 10; i++) {
         for (int j = -10; j < 10; j++) {
             glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
+            grass_position[index++] = pos;
+            // map可以直接遍历所有行
+            engine->m[round(pos.y)].push_back(pos);
+        }
+    }
+    for (int i = -5; i < 5; i++) {
+        for (int j = 6; j < 9; j++) {
+            glm::vec3 pos = glm::vec3((float)i, 1.0f, (float)j);
             grass_position[index++] = pos;
             // map可以直接遍历所有行
             engine->m[round(pos.y)].push_back(pos);

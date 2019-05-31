@@ -26,9 +26,11 @@ public:
         currentHeight = 0;
     }
 
-    bool CollisionDetect(glm::vec3 pos);
+    bool HorizontalCollisionDetect(glm::vec3 pos);
+    bool VerticalCollisionDetect(glm::vec3 pos, float& downY);
     //------碰撞检测参数-------
-    float threshold = 1.0f;
+    int threshold;
+    int max_threshold = 2;
 
     //----------弹跳相关系数 ----------------------------
     float currentHeight;

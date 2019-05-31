@@ -213,42 +213,42 @@ void escapePress(GLFWwindow *window, float& deltaTime) {
     // 单独进行处理提高运算速度
     else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         // WA
-        cout << "WA" << endl;
+        // cout << "WA" << endl;
         camera->ProcessKeyboard(FORWARD_LEFT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
         // W
-        cout << "W" << endl;
+        // cout << "W" << endl;
         camera->ProcessKeyboard(FORWARD, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         // WD
-        cout << "WD" << endl;
+        // cout << "WD" << endl;
         camera->ProcessKeyboard(FORWARD_RIGHT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         // SA
-        cout << "SA" << endl;
+        // cout << "SA" << endl;
         camera->ProcessKeyboard(BACKWARD_LEFT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_A) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_D) == GLFW_RELEASE) {
         // S
-        cout << "S" << endl;
+        // cout << "S" << endl;
         camera->ProcessKeyboard(BACKWARD, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         // SD
-        cout << "SD" << endl;
+        // cout << "SD" << endl;
         camera->ProcessKeyboard(BACKWARD_RIGHT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
         // A
-        cout << "A" << endl;
+        // cout << "A" << endl;
         camera->ProcessKeyboard(LEFT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_W) == GLFW_RELEASE && glfwGetKey(window, GLFW_KEY_S) == GLFW_RELEASE) {
         // D
-        cout << "D" << endl;
+        // cout << "D" << endl;
         camera->ProcessKeyboard(RIGHT, deltaTime);
     }
     else if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {

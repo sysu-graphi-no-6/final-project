@@ -85,7 +85,7 @@ private:
         Camera::getInstance()->lastY = ypos;
         Camera::getInstance()->lookAround(xoffset, yoffset);
     }
-
+    
     ///**
     //* @brief 通过滚轮进行视图放大缩小
     //* @param window 传入的窗口指针
