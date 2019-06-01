@@ -95,6 +95,9 @@ bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 currentPos, glm::vec3 ne
 }
 
 bool PhysicsEngine::UpVerticalCollisionDetect(glm::vec3 pos) {
+    if (m[round(pos.y + 0.5f)][round(pos.x)][round(pos.z)] == true) {
+        return false;
+    }
     return true;
 }
 // µ¯ÌøÊ±µÄ¼ì²â

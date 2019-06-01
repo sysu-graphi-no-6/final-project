@@ -6,8 +6,8 @@
 #include "World.h"
 #include "ShaderManager.h"
 // ************************设定好的参数************************************
-const unsigned int windowsWidth = 1920;
-const unsigned int windowsHeight = 1080;
+const unsigned int windowsWidth = 2560;
+const unsigned int windowsHeight = 1440;
 const char* head = "Final Project";
 // 用于记录鼠标移动
 float deltaTime = 0.0f;

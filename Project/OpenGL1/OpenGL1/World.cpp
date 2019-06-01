@@ -18,8 +18,31 @@ void World::Render(Shader& shader) {
         }
     }
     for (int i = -5; i < 5; i++) {
-        for (int j = 6; j < 9; j++) {
+        for (int j = 6; j < 7; j++) {
             glm::vec3 pos = glm::vec3((float)i, 1.0f, (float)j);
+            grass_position[index++] = pos;
+            // map可以直接遍历所有行
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+        }
+        for (int j = 7; j < 8; j++) {
+            if (i > 2) {
+                glm::vec3 pos = glm::vec3((float)i, 2.0f, (float)j);
+                grass_position[index++] = pos;
+                // map可以直接遍历所有行
+                engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+            }
+                
+            else {
+                glm::vec3 pos = glm::vec3((float)i, 3.0f, (float)j);
+                grass_position[index++] = pos;
+                // map可以直接遍历所有行
+                engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+            }
+            
+            
+        }
+        for (int j = 8; j < 9; j++) {
+            glm::vec3 pos = glm::vec3((float)i, 3.0f, (float)j);
             grass_position[index++] = pos;
             // map可以直接遍历所有行
             engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;

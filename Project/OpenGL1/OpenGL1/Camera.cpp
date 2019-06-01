@@ -6,7 +6,7 @@ Camera* Camera::instance = NULL;
 // 进行当前位置的计算(弹跳期间) 因为Camera include PhysicsEngine类，所以不能互相include
 void Camera::UpdatePositionEachSecond(float deltaTime) {
     PhysicsEngine* engine = PhysicsEngine::getInstance();
-    cout << "Height: " << (Position.y) << "Speed: " << (engine->currentSpeed) << endl;
+    //cout << "Height: " << (Position.y) << "Speed: " << (engine->currentSpeed) << endl;
     
     if (engine->isJumping && !engine->isFreeAll) {
         // 弹跳函数只负责上升阶段
@@ -22,6 +22,9 @@ void Camera::UpdatePositionEachSecond(float deltaTime) {
             //cout << "Height: " << (afterMove.y) << "  Speed: " << (engine->currentSpeed) << endl;
             if (engine->UpVerticalCollisionDetect(afterMove)) {
                 Position = afterMove;
+            }
+            else {
+                FreeAll();
             }
         }
         else {
@@ -108,14 +111,20 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
         glm::vec3 strafe = glm::vec3(vm[0][0], 0.0f, vm[2][0]);
 
         afterMove = Position + (-forwardVector * forward + rightVector * strafe) * cameraSpeed;
-        // 保留小数，减少计算量
+        // 保留小数，减少计算量 0.001
         int remain = 3;
-        afterMove = glm::vec3(getFloat(afterMove.x, remain), getFloat(afterMove.y, remain), getFloat(afterMove.z, remain));
-        //cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
-       // cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
+        if (abs(afterMove.x - Position.x) < 0.05f) {
+            afterMove.x = Position.x;
+        }
+        if (abs(afterMove.z - Position.z) < 0.05f) {
+            afterMove.z = Position.z;
+        }
+       // afterMove = glm::vec3(getFloat(afterMove.x, remain), getFloat(afterMove.y, remain), getFloat(afterMove.z, remain));
+       cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
+       cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
        //afterMove = glm::vec3((int)afterMove.x, (int)afterMove.y, (int)afterMove.z);
         if (PhysicsEngine::getInstance()->HorizontalCollisionDetect(Position, afterMove)) {
-            if (!engine->isFreeAll && !engine->isJumping) {
+            if (!engine->isFreeAll && !engine->isJumping && !flysky) {
                 if (engine->WalkingVerticalCollisionDetect(afterMove)) {
                     //// 增加位移量
                     //float offset = 0.5f;
