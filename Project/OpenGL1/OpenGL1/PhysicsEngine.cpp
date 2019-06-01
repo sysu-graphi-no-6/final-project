@@ -2,8 +2,23 @@
 
 PhysicsEngine* PhysicsEngine::instance = NULL;
 
-bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 pos) {
-    int y_round = round(pos.y);
+bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 currentPos, glm::vec3 nextPos) {
+    // 进行下一位置和上一位置的方向判断
+    int axBiggerthanPx = 0;
+    int azBiggerthanPz = 0;
+    if (nextPos.x < currentPos.x) {
+        axBiggerthanPx = -1;
+    }
+    else if (nextPos.x > currentPos.x) {
+        axBiggerthanPx = 1;
+    }
+    if (nextPos.z < currentPos.z) {
+        azBiggerthanPz = -1;
+    }
+    else if (nextPos.z > currentPos.z) {
+        azBiggerthanPz = 1;
+    }
+    int y_round = round(currentPos.y);
     int y_min = y_round - 1;
 
     // 两个高度，每个高度8个方向进行碰撞检测
@@ -12,55 +27,70 @@ bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 pos) {
         *   *
         * * *
     */
-    if (m[round(pos.y) - 1][round(pos.x) - 1][round(pos.z) - 1] == true) {
-        return false;
+    if (axBiggerthanPx == -1 && azBiggerthanPz == -1) {
+        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) - 1][round(pos.x) - 1][round(pos.z) + 1] == true) {
-        return false;
+    else if (axBiggerthanPx == -1 && azBiggerthanPz == 0) {
+        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z)] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z)] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) - 1][round(pos.x) + 1][round(pos.z) - 1] == true) {
-        return false;
+    else if (axBiggerthanPx == -1 && azBiggerthanPz == 1) {
+        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) - 1][round(pos.x) + 1][round(pos.z) + 1] == true) {
-        return false;
+    else if (axBiggerthanPx == 0 && azBiggerthanPz == -1) {
+        if (m[y_round][round(currentPos.x)][round(currentPos.z) - 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x)][round(currentPos.z) - 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) + 1][round(pos.x) - 1][round(pos.z) - 1] == true) {
-        return false;
+    else if (axBiggerthanPx == 0 && azBiggerthanPz == 1) {
+        if (m[y_round][round(currentPos.x)][round(currentPos.z) + 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x)][round(currentPos.z) + 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) + 1][round(pos.x) - 1][round(pos.z) + 1] == true) {
-        return false;
+    else if (axBiggerthanPx == 1 && azBiggerthanPz == -1) {
+        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) + 1][round(pos.x) + 1][round(pos.z) - 1] == true) {
-        return false;
+    else if (axBiggerthanPx == 1 && azBiggerthanPz == 0) {
+        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z)] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z)] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) + 1][round(pos.x) + 1][round(pos.z) + 1] == true) {
-        return false;
+    else if (axBiggerthanPx == 1 && azBiggerthanPz == 1) {
+        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
+            return false;
+        }
+        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
+            return false;
+        }
     }
-    if (m[round(pos.y) - 1][round(pos.x) - 1][round(pos.z)] == true) {
-        return false;
-    }
-    if (m[round(pos.y) - 1][round(pos.x) - 1][round(pos.z)] == true) {
-        return false;
-    }
-    if (m[round(pos.y) - 1][round(pos.x)][round(pos.z) - 1] == true) {
-        return false;
-    }
-    if (m[round(pos.y) - 1][round(pos.x)][round(pos.z) + 1] == true) {
-        return false;
-    }
-    if (m[round(pos.y) + 1][round(pos.x) - 1][round(pos.z)] == true) {
-        return false;
-    }
-    if (m[round(pos.y) + 1][round(pos.x) - 1][round(pos.z)] == true) {
-        return false;
-    }
-    if (m[round(pos.y) + 1][round(pos.x)][round(pos.z) - 1] == true) {
-        return false;
-    }
-    if (m[round(pos.y) + 1][round(pos.x)][round(pos.z) + 1] == true) {
-        return false;
-    }
-    
     return true;
 }
 

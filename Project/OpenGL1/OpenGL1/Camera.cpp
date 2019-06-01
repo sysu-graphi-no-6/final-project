@@ -114,29 +114,30 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
         //cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
        // cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
        //afterMove = glm::vec3((int)afterMove.x, (int)afterMove.y, (int)afterMove.z);
-        if (PhysicsEngine::getInstance()->HorizontalCollisionDetect(afterMove)) {
+        if (PhysicsEngine::getInstance()->HorizontalCollisionDetect(Position, afterMove)) {
             if (!engine->isFreeAll && !engine->isJumping) {
                 if (engine->WalkingVerticalCollisionDetect(afterMove)) {
-                    // 增加位移量
-                    float offset = 1.0f;
-                    int axBiggerthanPx = 0;
-                    int azBiggerthanPz = 0;
-                    if (afterMove.x < Position.x) {
-                        axBiggerthanPx = -1;
-                    }
-                    else if (afterMove.x > Position.x) {
-                        axBiggerthanPx = 1;
-                    }
-                    if (afterMove.z < Position.z) {
-                        azBiggerthanPz = -1;
-                    }
-                    else if (afterMove.z > Position.z) {
-                        azBiggerthanPz = 1;
-                    }
-                    float x_offset = axBiggerthanPx > 0 ? 1.0f : (axBiggerthanPx == 0 ? 0.0f : -1.0f);
-                    float z_offset = azBiggerthanPz > 0 ? 1.0f : (azBiggerthanPz == 0 ? 0.0f : -1.0f);
+                    //// 增加位移量
+                    //float offset = 0.5f;
+                    //int axBiggerthanPx = 0;
+                    //int azBiggerthanPz = 0;
+                    //if (afterMove.x < Position.x) {
+                    //    axBiggerthanPx = -1;
+                    //}
+                    //else if (afterMove.x > Position.x) {
+                    //    axBiggerthanPx = 1;
+                    //}
+                    //if (afterMove.z < Position.z) {
+                    //    azBiggerthanPz = -1;
+                    //}
+                    //else if (afterMove.z > Position.z) {
+                    //    azBiggerthanPz = 1;
+                    //}
+                    //float x_offset = axBiggerthanPx > 0 ? 1.0f : (axBiggerthanPx == 0 ? 0.0f : -1.0f);
+                    //float z_offset = azBiggerthanPz > 0 ? 1.0f : (azBiggerthanPz == 0 ? 0.0f : -1.0f);
 
-                    Position = glm::vec3(afterMove.x + x_offset, Position.y, afterMove.z + z_offset);
+                    // Position = glm::vec3(afterMove.x + x_offset, Position.y, afterMove.z + z_offset);
+                    Position = glm::vec3(afterMove.x, Position.y, afterMove.z);
                     FreeAll();
                     return;
                 }

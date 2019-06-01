@@ -39,7 +39,7 @@ public:
         currentHeight = 0;
     }
 
-    bool HorizontalCollisionDetect(glm::vec3 pos);
+    bool HorizontalCollisionDetect(glm::vec3 currentPos, glm::vec3 nextPos);
     bool VerticalCollisionDetect(glm::vec3 pos, float& downY);
     bool UpVerticalCollisionDetect(glm::vec3 pos);
     bool DownVerticalCollisionDetect(glm::vec3 pos);
