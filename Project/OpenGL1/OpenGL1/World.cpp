@@ -1,7 +1,7 @@
 #include "World.h"
 World* World::instance = NULL;
 
-
+// 整个世界的渲染
 void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
     PhysicsEngine* engine = PhysicsEngine::getInstance();
@@ -13,7 +13,7 @@ void World::Render(Shader& shader) {
         for (int j = -10; j < 10; j++) {
             glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
             grass_position[index++] = pos;
-            // map可以直接遍历所有行
+            // 添加到物理引擎中
             engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
@@ -21,21 +21,18 @@ void World::Render(Shader& shader) {
         for (int j = 6; j < 7; j++) {
             glm::vec3 pos = glm::vec3((float)i, 1.0f, (float)j);
             grass_position[index++] = pos;
-            // map可以直接遍历所有行
             engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
         for (int j = 7; j < 8; j++) {
             if (i > 2) {
                 glm::vec3 pos = glm::vec3((float)i, 2.0f, (float)j);
                 grass_position[index++] = pos;
-                // map可以直接遍历所有行
                 engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
             }
                 
             else {
                 glm::vec3 pos = glm::vec3((float)i, 3.0f, (float)j);
                 grass_position[index++] = pos;
-                // map可以直接遍历所有行
                 engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
             }
             
@@ -44,7 +41,6 @@ void World::Render(Shader& shader) {
         for (int j = 8; j < 9; j++) {
             glm::vec3 pos = glm::vec3((float)i, 3.0f, (float)j);
             grass_position[index++] = pos;
-            // map可以直接遍历所有行
             engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
@@ -87,6 +83,24 @@ void World::Render(Shader& shader) {
     }
     SingleRender(shader, brick_count, brick_position, manager->BRICK);
 
+    // 水流
+    glm::vec3 water_position[5];
+    int water_count = 5;
+    index = 0;
+    for (int i = 4; i < 8; i++) {
+        glm::vec3 pos = glm::vec3((float)i, 1.0f, 3.0f);
+        water_position[index++] = pos;
+        //水不做碰撞
+        engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
+    }
+    SingleRender(shader, water_count, water_position, manager->WATER);
+    // 树
+    DrawTree(manager->Tree_oak, manager->Leave_oak, glm::vec3(-3.0f, 1.0f, 0.0f), shader);
+    DrawTree(manager->Tree_jungle, manager->Leave_jungle, glm::vec3(-6.0f, 1.0f, -2.0f), shader);
+    DrawTree(manager->Tree_birch, manager->Leave_birch, glm::vec3(-7.0f, 1.0f, -7.0f), shader);
+    // 蘑菇
+    glm::vec3 mushroom_position[1] = { glm::vec3(3.0f) };
+    SingleRender(shader, 1, mushroom_position, manager->MUSHROOM);
 }
 
 void World::SingleRender(Shader& shader, int count, glm::vec3* position, ResourceManager::BlockType block) {
@@ -95,4 +109,37 @@ void World::SingleRender(Shader& shader, int count, glm::vec3* position, Resourc
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * count, &position[0]);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     manager->RenderScene(shader, block, count);
+}
+
+void World::DrawTree(ResourceManager::BlockType tree_type, ResourceManager::BlockType leave_type, glm::vec3 pos, Shader& shader) {
+    ResourceManager* manager = ResourceManager::getInstance();
+    PhysicsEngine* engine = PhysicsEngine::getInstance();
+    // 画出树干
+    glm::vec3 tree[5];
+    int count = 5;
+    int index = 0;
+    for (int i = 0; i < count; i++) {
+        glm::vec3 tmp = glm::vec3(pos.x, pos.y + (float)i, pos.z);
+        tree[index++] = tmp;
+        // 添加到物理引擎中
+        engine->m[round(tmp.y)][round(tmp.x)][round(tmp.z)] = true;
+    }
+    SingleRender(shader, count, tree, tree_type);
+
+    // 画出树叶
+    // 画出树干
+    glm::vec3 leaves[35];
+    count = 35;
+    index = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = -2 + i; j <= 2 - i; j++) {
+            for (int k = -2 + i; k <= 2 - i; k++) {
+                glm::vec3 tmp = glm::vec3(pos.x + (float)j, pos.y + (float)(i + 4), pos.z + (float)k);
+                leaves[index++] = tmp;
+                // 添加到物理引擎中
+                engine->m[round(tmp.y)][round(tmp.x)][round(tmp.z)] = true;
+            }
+        }
+    }
+    SingleRender(shader, count, leaves, leave_type);
 }

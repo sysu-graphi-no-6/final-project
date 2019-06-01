@@ -24,9 +24,17 @@ void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir, unsi
     else if (dir == RIGHT) {
         glBindVertexArray(cubeVAO_right);
     }
-    // Render Cube
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, drawCount);
-    glBindVertexArray(0);
+    if (dir != CROSS) {
+        // Render Cube
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 6, drawCount);
+        glBindVertexArray(0);
+    }
+    else {
+        glBindVertexArray(crossVAO);
+        // Render Cube
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 12, drawCount);
+        glBindVertexArray(0);
+    }
 }
 
 void ResourceManager::RenderCube(unsigned int texture, unsigned int drawCount) {
@@ -38,7 +46,7 @@ void ResourceManager::RenderCube(unsigned int texture, unsigned int drawCount) {
     RenderFace(texture, BACK, drawCount);
 }
 
-unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)
+unsigned int ResourceManager::loadTexture(GLchar* path)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -49,6 +57,7 @@ unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)
     unsigned char *data = stbi_load(path, &width, &height, &nrChannels, 0);
     if (data)
     {
+        GLenum format = nrChannels == 3 ? GL_RGB : GL_RGBA;
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         // glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         stbi_image_free(data);
@@ -65,6 +74,40 @@ unsigned int ResourceManager::loadTexture(GLchar* path, unsigned int format)
         stbi_image_free(data);
     }
     return textureID;
+}
+
+unsigned int* ResourceManager::loadTextures(GLchar* path, int count) {
+    unsigned int* textures = new unsigned int[count];
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        // 进行图片的切分
+        int singleHeight = height / count;
+
+        for (int i = 0; i < count; i++) {
+            // Create Texture
+            glGenTextures(1, &textures[i]);
+            glBindTexture(GL_TEXTURE_2D, textures[i]);
+            GLenum format = nrChannels == 3 ? GL_RGB : GL_RGBA;
+            glTexImage2D(GL_TEXTURE_2D, 0, format, width, singleHeight, 0, format, GL_UNSIGNED_BYTE, data + (nrChannels * width * singleHeight) * i);
+            //glGenerateMipmap(GL_TEXTURE_2D);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        stbi_image_free(data);
+        return textures;
+    }
+    else
+    {
+        std::cout << "Cubemap texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+        return NULL;
+    }
+    return NULL;
 }
 
 /* 下列函数接受留个纹理路径的vector*/
@@ -129,4 +172,91 @@ void ResourceManager::RenderSky(glm::mat4 projection) {
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS); // set depth function back to default
+}
+
+// 在while循环中方块的渲染
+void ResourceManager::RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount)
+{
+    // 记录水的状态
+    static unsigned int water_state = 0;
+    // 记录帧数，减缓速度
+    static unsigned int frame = 0;
+    // 物体1
+    glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::translate(model, pos);
+    shader.setMat4("model", model);
+    // RenderCube(grass_top);
+    // 这里添加方块类型需要添加枚举型
+    switch (blockType)
+    {
+    case GRASS:
+        RenderFace(textureID["grass_top"], TOP, drawCount);
+        RenderFace(textureID["dirt"], BOTTOM, drawCount);
+        RenderFace(textureID["grass_side"], LEFT, drawCount);
+        RenderFace(textureID["grass_side"], RIGHT, drawCount);
+        RenderFace(textureID["grass_side"], FRONT, drawCount);
+        RenderFace(textureID["grass_side"], BACK, drawCount);
+        break;
+    case BRICK:
+        RenderCube(textureID["brick"], drawCount);
+        break;
+    case DIRT:
+        RenderCube(textureID["grass_top"], drawCount);
+        break;
+    case WATER:
+        RenderCube(multipleTextureID["water"].second[water_state], drawCount);
+        break;
+    case Tree_birch:
+        RenderFace(textureID["tree_birch_top"], TOP, drawCount);
+        RenderFace(textureID["tree_birch_top"], BOTTOM, drawCount);
+        RenderFace(textureID["tree_birch_side"], LEFT, drawCount);
+        RenderFace(textureID["tree_birch_side"], RIGHT, drawCount);
+        RenderFace(textureID["tree_birch_side"], FRONT, drawCount);
+        RenderFace(textureID["tree_birch_side"], BACK, drawCount);
+        break;
+    case Tree_oak:
+        RenderFace(textureID["tree_oak_top"], TOP, drawCount);
+        RenderFace(textureID["tree_oak_top"], BOTTOM, drawCount);
+        RenderFace(textureID["tree_oak_side"], LEFT, drawCount);
+        RenderFace(textureID["tree_oak_side"], RIGHT, drawCount);
+        RenderFace(textureID["tree_oak_side"], FRONT, drawCount);
+        RenderFace(textureID["tree_oak_side"], BACK, drawCount);
+        break;
+    case Tree_jungle:
+        RenderFace(textureID["tree_jungle_top"], TOP, drawCount);
+        RenderFace(textureID["tree_jungle_top"], BOTTOM, drawCount);
+        RenderFace(textureID["tree_jungle_side"], LEFT, drawCount);
+        RenderFace(textureID["tree_jungle_side"], RIGHT, drawCount);
+        RenderFace(textureID["tree_jungle_side"], FRONT, drawCount);
+        RenderFace(textureID["tree_jungle_side"], BACK, drawCount);
+        break;
+    case Leave_birch:
+        RenderCube(textureID["leave_birch"], drawCount);
+        break;
+    case Leave_jungle:
+        RenderCube(textureID["leave_jungle"], drawCount);
+        break;
+    case Leave_oak:
+        RenderCube(textureID["leave_oak"], drawCount);
+        break;
+    case MUSHROOM:
+        RenderFace(textureID["mushroom"],CROSS, drawCount);
+        break;
+    default:
+        RenderFace(textureID["grass_top"], TOP, drawCount);
+        RenderFace(textureID["dirt"], BOTTOM, drawCount);
+        RenderFace(textureID["grass_side"], LEFT, drawCount);
+        RenderFace(textureID["grass_side"], RIGHT, drawCount);
+        RenderFace(textureID["grass_side"], FRONT, drawCount);
+        RenderFace(textureID["grass_side"], BACK, drawCount);
+        break;
+    }
+    if (frame <= 10) {
+        frame++;
+    }
+    else {
+        frame = 0;
+        water_state = (water_state + 1) % 32;
+    }
+
 }

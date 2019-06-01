@@ -261,4 +261,7 @@ void escapePress(GLFWwindow *window, float& deltaTime) {
     // ÌøÔ¾µ¥¶À´¦Àí
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         camera->ProcessKeyboard(JUMP, deltaTime);
+    else if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+        camera->ProcessKeyboard(DOWN, deltaTime);
+    }
 }

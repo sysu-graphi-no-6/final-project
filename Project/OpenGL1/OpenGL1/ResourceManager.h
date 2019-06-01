@@ -19,58 +19,52 @@ public:
     }
     ResourceManager() {
     }
-
+    ~ResourceManager() {
+        for (auto iter : multipleTextureID) {
+            pair<int, unsigned int*> p = iter.second;
+            delete(p.second);
+        }
+    }
     // ----------纹理类-----------------------
     // 方块种类
     enum BlockType {
-        GRASS, BRICK
+        GRASS, BRICK, DIRT, WATER, Tree_birch, Tree_oak, Tree_jungle, Leave_oak, Leave_birch, Leave_jungle,
+        MUSHROOM,
     };
     // 加载纹理
-    unsigned int loadTexture(GLchar* path, unsigned int format);
+    unsigned int loadTexture(GLchar* path);
+    // 加载多张图片，比如水
+    unsigned int* loadTextures(GLchar* path, int count);
     void setAllTexture() {
-        textureID["grass_side"] = loadTexture("resource/blocks/grass_path_side.png", GL_RGBA);
-        textureID["grass_top"] = loadTexture("resource/blocks/grass_path_top.png", GL_RGB);
-        textureID["dirt"] = loadTexture("resource/blocks/dirt.png", GL_RGB);
-        textureID["brick"] = loadTexture("resource/blocks/brick.png", GL_RGB);
+        textureID["grass_side"] = loadTexture("resource/blocks/grass_path_side.png");
+        textureID["grass_top"] = loadTexture("resource/blocks/grass_path_top.png");
+        textureID["dirt"] = loadTexture("resource/blocks/dirt.png");
+        textureID["brick"] = loadTexture("resource/blocks/brick.png");
+        multipleTextureID["water"].first = 32;
+        multipleTextureID["water"].second = loadTextures("resource/blocks2/water_still.png", 32);
+        // 树干
+        textureID["tree_oak_top"] = loadTexture("resource/blocks/log_oak_top.png");
+        textureID["tree_oak_side"] = loadTexture("resource/blocks/log_oak.png");
+        textureID["tree_birch_top"] = loadTexture("resource/blocks/log_birch_top.png");
+        textureID["tree_birch_side"] = loadTexture("resource/blocks/log_birch.png");
+        textureID["tree_jungle_top"] = loadTexture("resource/blocks/log_spruce_top.png");
+        textureID["tree_jungle_side"] = loadTexture("resource/blocks/log_spruce.png");
+        // 树叶 添加颜色50aa55
+        textureID["leave_birch"] = loadTexture("resource/blocks/leaves_birch.png");
+        textureID["leave_jungle"] = loadTexture("resource/blocks/leaves_jungle.png");
+        textureID["leave_oak"] = loadTexture("resource/blocks/leaves_oak.png");
+        // 蘑菇
+        textureID["mushroom"] = loadTexture("resource/blocks/mushroom_red.png");
     }
     //----------------渲染----------------------------
     // 选择渲染的方向
     enum RenderDirection
     {
-        LEFT, RIGHT, TOP, BOTTOM, BACK, FRONT
+        LEFT, RIGHT, TOP, BOTTOM, BACK, FRONT, CROSS
     };
-    // 在while循环中的渲染
-    void RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount = 1)
-    {
-        // 物体1
-        glm::mat4 model = glm::mat4(1.0f);
-       // model = glm::translate(model, pos);
-        shader.setMat4("model", model);
-        // RenderCube(grass_top);
-        switch (blockType)
-        {
-        case GRASS:
-            RenderFace(textureID["grass_top"], TOP, drawCount);
-            RenderFace(textureID["dirt"], BOTTOM, drawCount);
-            RenderFace(textureID["grass_side"], LEFT, drawCount);
-            RenderFace(textureID["grass_side"], RIGHT, drawCount);
-            RenderFace(textureID["grass_side"], FRONT, drawCount);
-            RenderFace(textureID["grass_side"], BACK, drawCount);
-            break;
-        case BRICK:
-            RenderCube(textureID["brick"], drawCount);
-            break;
-        default:
-            RenderFace(textureID["grass_top"], TOP, drawCount);
-            RenderFace(textureID["dirt"], BOTTOM, drawCount);
-            RenderFace(textureID["grass_side"], LEFT, drawCount);
-            RenderFace(textureID["grass_side"], RIGHT, drawCount);
-            RenderFace(textureID["grass_side"], FRONT, drawCount);
-            RenderFace(textureID["grass_side"], BACK, drawCount);
-            break;
-        }
+    // 在while循环中方块的渲染(每个面可以不同材质)
+    void RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount = 1);
 
-    }
     // 渲染整个方块
     void RenderCube(unsigned int texture, unsigned int drawCount = 1);
     // 进行方块的初始化
@@ -87,7 +81,10 @@ public:
         Single_InitCube(cubeVAO_back, cubeVBO_back, BACK);
         Single_InitCube(cubeVAO_left, cubeVBO_left, LEFT);
         Single_InitCube(cubeVAO_right, cubeVBO_right, RIGHT);
+        Single_InitCube(crossVAO, crossVBO, CROSS);
     }
+
+    // 进行单个方块的绑定
     void Single_InitCube(unsigned int& VAO, unsigned int &VBO, RenderDirection dir){
         // top
         glGenVertexArrays(1, &VAO);
@@ -111,6 +108,9 @@ public:
         }
         else if (dir == RIGHT) {
             glBufferData(GL_ARRAY_BUFFER, sizeof(right), right, GL_STATIC_DRAW);
+        }
+        else if (dir == CROSS) {
+            glBufferData(GL_ARRAY_BUFFER, sizeof(cross), cross, GL_STATIC_DRAW);
         }
         // Link vertex attributes
         glBindVertexArray(VAO);
@@ -145,9 +145,13 @@ public:
         return instanceVBO;
     }
 
+
+    void LoadTextureSplit(const GLchar* file, int count);
 private:
     // 材质和对应的id
     map<string, unsigned int> textureID;
+    // 可以作为动画的材质
+    map<string, pair<int, unsigned int*> > multipleTextureID;
     unsigned int instanceVBO;
     static ResourceManager* instance;
     // --------------渲染部分-----------------------
@@ -210,9 +214,26 @@ private:
         -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f // bottom-left        
     };
 
+    GLfloat cross[96] = {
+        // Back
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
+        0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+        0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
+        // Front
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 
+        0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, 
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 
+        0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, 
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, 
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, 
+    };
+
     // ------------- 方块部分-------------------------
-    unsigned int cubeVBO_top, cubeVBO_bottom, cubeVBO_left, cubeVBO_right, cubeVBO_front, cubeVBO_back;
-    unsigned int cubeVAO_top, cubeVAO_bottom, cubeVAO_left, cubeVAO_right, cubeVAO_front, cubeVAO_back;
+    unsigned int cubeVBO_top, cubeVBO_bottom, cubeVBO_left, cubeVBO_right, cubeVBO_front, cubeVBO_back, crossVAO;
+    unsigned int cubeVAO_top, cubeVAO_bottom, cubeVAO_left, cubeVAO_right, cubeVAO_front, cubeVAO_back, crossVBO;
     //----------------天空盒部分-----------------------------
     unsigned int skyboxVAO, skyboxVBO;
     float skyboxVertices[108] = {

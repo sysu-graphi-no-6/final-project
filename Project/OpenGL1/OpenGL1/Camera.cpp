@@ -7,7 +7,6 @@ Camera* Camera::instance = NULL;
 void Camera::UpdatePositionEachSecond(float deltaTime) {
     PhysicsEngine* engine = PhysicsEngine::getInstance();
     //cout << "Height: " << (Position.y) << "Speed: " << (engine->currentSpeed) << endl;
-    
     if (engine->isJumping && !engine->isFreeAll) {
         // 弹跳函数只负责上升阶段
         // 利用重力加速度参数 (v + v0)/ 2 * t
@@ -157,6 +156,16 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
     if (!flysky && direction == JUMP && !engine->isJumping) {
         engine->InitJumping();
     }
-    if(flysky && direction == JUMP)
-        Position = glm::vec3(Position.x, Position.y + 0.01f, Position.z);
+    if (flysky && direction == JUMP) {
+        afterMove = glm::vec3(Position.x, Position.y + 0.05f, Position.z);
+        if (engine->UpVerticalCollisionDetect(afterMove)) {
+            Position = afterMove;
+        }
+    }
+    else if (flysky && direction == DOWN) {
+        afterMove = glm::vec3(Position.x, Position.y - 0.05f, Position.z);
+        if (engine->DownVerticalCollisionDetect(afterMove)) {
+            Position = afterMove;
+        }
+    }
 }

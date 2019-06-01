@@ -59,6 +59,10 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 
 void main()
 {
+    // 进行材质处理，如果透明度小于0.1的片段丢弃
+    vec4 texColor = texture(diffuseTexture, fs_in.TexCoords);
+    if(texColor.a < 0.1)
+        discard;
     vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;           
     vec3 normal = normalize(fs_in.Normal);
     // ambient环境光

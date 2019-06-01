@@ -2,6 +2,7 @@
 #include "Initial.h"
 #include "Shader.h"
 #include "Camera.h"
+// 该类对所有的着色器进行管理
 class ShaderManager
 {
 public:

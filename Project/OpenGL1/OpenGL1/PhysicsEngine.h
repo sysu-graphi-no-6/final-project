@@ -21,7 +21,8 @@ enum Direction {
     BACKWARD_LEFT,
     BACKWARD_RIGHT,
     JUMP,
-    FLYSKY
+    FLYSKY,
+    DOWN
 };
 
 class PhysicsEngine {
