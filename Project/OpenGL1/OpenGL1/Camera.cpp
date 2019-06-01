@@ -6,41 +6,57 @@ Camera* Camera::instance = NULL;
 // 进行当前位置的计算(弹跳期间) 因为Camera include PhysicsEngine类，所以不能互相include
 void Camera::UpdatePositionEachSecond(float deltaTime) {
     PhysicsEngine* engine = PhysicsEngine::getInstance();
-    //cout << "Height: " << (Position.y) << "Speed: " << (engine->currentSpeed) << endl;
+    cout << "Height: " << (Position.y) << "Speed: " << (engine->currentSpeed) << endl;
     
-    if (engine->isJumping) {
+    if (engine->isJumping && !engine->isFreeAll) {
+        // 弹跳函数只负责上升阶段
         // 利用重力加速度参数 (v + v0)/ 2 * t
-        if (engine->currentSpeed > -(engine->initialSpeed)) {
+        if (engine->currentSpeed > 0) {
             float nowSpeed = engine->currentSpeed + engine->gravityFactor * deltaTime * engine->slowingdownFactor;
             // 当前走过的路程
             engine->currentHeight = (nowSpeed + engine->currentSpeed) / 2.0f * deltaTime;
             // if (engine->currentHeight < 0.0f && engine->currentHeight > -0.1f) engine->currentHeight = 0.0f;
-            // cout << "Height:" << (engine->currentHeight) << "Speed" << (engine->currentSpeed) << endl;
+            
             engine->currentSpeed = nowSpeed;
             glm::vec3 afterMove = glm::vec3(Position.x, Position.y + engine->currentHeight, Position.z);
-            // 解决下方碰撞问题
-            if (engine->currentSpeed < 0) {
-                float downY;
-                if (engine->VerticalCollisionDetect(afterMove, downY)) {
-                    Position = afterMove;
-                }
-                else {
-                    Position = glm::vec3(Position.x, downY, Position.z);
-                }
-            }
-            else {
+            //cout << "Height: " << (afterMove.y) << "  Speed: " << (engine->currentSpeed) << endl;
+            if (engine->UpVerticalCollisionDetect(afterMove)) {
                 Position = afterMove;
             }
-            
         }
         else {
-            engine->isJumping = false;
-            engine->currentSpeed = 0.0f;
-            Position = glm::vec3(Position.x, round(Position.y), Position.z);
-            /* cout << Position.y << endl;*/
-            
+            FreeAll();
         }
     }
+    else if (engine->isFreeAll) {
+        float nowSpeed = engine->currentSpeed + engine->gravityFactor * deltaTime * engine->slowingdownFactor;
+        // 当前走过的路程
+        engine->currentHeight = (nowSpeed + engine->currentSpeed) / 2.0f * deltaTime;
+        // if (engine->currentHeight < 0.0f && engine->currentHeight > -0.1f) engine->currentHeight = 0.0f;
+
+        engine->currentSpeed = nowSpeed;
+        glm::vec3 afterMove = glm::vec3(Position.x, Position.y + engine->currentHeight, Position.z);
+        if (engine->DownVerticalCollisionDetect(afterMove)) {
+            Position = afterMove;
+        }
+        else {
+            engine->isFreeAll = false;
+            if (engine->isJumping) {
+                engine->isJumping = false;
+            }
+            engine->currentHeight = 0.0f;
+            engine->currentSpeed = 0.0f;
+            Position = glm::vec3(Position.x, round(Position.y), Position.z);
+        }
+    }
+}
+
+void Camera::FreeAll() {
+    PhysicsEngine* engine = PhysicsEngine::getInstance();
+    engine->currentHeight = 0.0f;
+    engine->currentSpeed = 0.0f;
+    engine->isFreeAll = true;
+
 }
 
 void Camera::ProcessKeyboard(Direction direction, float deltaTime)
@@ -60,7 +76,7 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
     // 不在最后一刻进行处理以避免多次碰撞检测出现问题
     if (engine->isJumping && engine->currentSpeed <= -(engine->initialSpeed)) return;
     // 进行四种方向的判断
-    float speed = 1.0f;
+    float speed = 2.0f;
     if (direction == FORWARD)
         forwardVector += speed;
     if (direction == BACKWARD)
@@ -95,26 +111,35 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
         // 保留小数，减少计算量
         int remain = 3;
         afterMove = glm::vec3(getFloat(afterMove.x, remain), getFloat(afterMove.y, remain), getFloat(afterMove.z, remain));
-        //cout << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
+        //cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
+       // cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
        //afterMove = glm::vec3((int)afterMove.x, (int)afterMove.y, (int)afterMove.z);
         if (PhysicsEngine::getInstance()->HorizontalCollisionDetect(afterMove)) {
-            // 如果下面没有方块，掉下去
-            bool blockDown = false;
-            for (auto iter : engine->m[(int)afterMove.y - 2]) {
-                //太近的排除 减少运算
-                unsigned int minus_x = abs((int)afterMove.x - (int)iter.x);
-                unsigned int minus_z = abs((int)afterMove.z - (int)iter.z);
-                if (minus_x > engine->max_threshold || minus_z > engine->max_threshold) {
-                    continue;
+            if (!engine->isFreeAll && !engine->isJumping) {
+                if (engine->WalkingVerticalCollisionDetect(afterMove)) {
+                    // 增加位移量
+                    float offset = 1.0f;
+                    int axBiggerthanPx = 0;
+                    int azBiggerthanPz = 0;
+                    if (afterMove.x < Position.x) {
+                        axBiggerthanPx = -1;
+                    }
+                    else if (afterMove.x > Position.x) {
+                        axBiggerthanPx = 1;
+                    }
+                    if (afterMove.z < Position.z) {
+                        azBiggerthanPz = -1;
+                    }
+                    else if (afterMove.z > Position.z) {
+                        azBiggerthanPz = 1;
+                    }
+                    float x_offset = axBiggerthanPx > 0 ? 1.0f : (axBiggerthanPx == 0 ? 0.0f : -1.0f);
+                    float z_offset = azBiggerthanPz > 0 ? 1.0f : (azBiggerthanPz == 0 ? 0.0f : -1.0f);
+
+                    Position = glm::vec3(afterMove.x + x_offset, Position.y, afterMove.z + z_offset);
+                    FreeAll();
+                    return;
                 }
-                if (minus_x < engine->threshold && minus_z < engine->threshold) {
-                    blockDown = true;
-                    break;
-                }
-            }
-            if (!blockDown && !engine->isJumping) {
-                afterMove = glm::vec3(afterMove.x, afterMove.y - 1, afterMove.z);
-                engine->isJumping = false;
             }
             Position = afterMove;
         }

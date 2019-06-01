@@ -10,6 +10,19 @@
 #include <map>
 using namespace std;
 
+// 通过集中可能的相机移动进行相机视图的变化
+enum Direction {
+    FORWARD,
+    BACKWARD,
+    LEFT,
+    RIGHT,
+    FORWARD_LEFT,
+    FORWARD_RIGHT,
+    BACKWARD_LEFT,
+    BACKWARD_RIGHT,
+    JUMP,
+    FLYSKY
+};
 
 class PhysicsEngine {
 public:
@@ -28,6 +41,9 @@ public:
 
     bool HorizontalCollisionDetect(glm::vec3 pos);
     bool VerticalCollisionDetect(glm::vec3 pos, float& downY);
+    bool UpVerticalCollisionDetect(glm::vec3 pos);
+    bool DownVerticalCollisionDetect(glm::vec3 pos);
+    bool WalkingVerticalCollisionDetect(glm::vec3 pos);
     //------碰撞检测参数-------
     int threshold;
     int max_threshold = 2;
@@ -39,8 +55,10 @@ public:
     float slowingdownFactor;
     float gravityFactor;
     bool isJumping;
+    bool isFreeAll;
     // 利用map 只对高度进行遍历
-    map<int, vector<glm::vec3> > m;
+    // y x z
+    map<int, map<int, map<int, bool> > > m;
 
 private:
 

@@ -11,19 +11,6 @@
 #define roomSizeX 200.f
 #define roomSizeY 60.f
 #define roomSizeZ 200.f
-// 通过集中可能的相机移动进行相机视图的变化
-enum Direction {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT,
-    FORWARD_LEFT,
-    FORWARD_RIGHT,
-    BACKWARD_LEFT,
-    BACKWARD_RIGHT,
-    JUMP,
-    FLYSKY
-};
 
 /*定义相机的相关类*/
 class Camera {
@@ -134,6 +121,8 @@ public:
         return (float)(round(input * pow(10, n))) / (float)(pow(10, n));
     }
 
+    // 自由落体
+    void FreeAll();
 
 private:
     /**

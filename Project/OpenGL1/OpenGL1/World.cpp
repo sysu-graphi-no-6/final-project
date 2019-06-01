@@ -14,7 +14,7 @@ void World::Render(Shader& shader) {
             glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
             grass_position[index++] = pos;
             // map可以直接遍历所有行
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
     for (int i = -5; i < 5; i++) {
@@ -22,7 +22,7 @@ void World::Render(Shader& shader) {
             glm::vec3 pos = glm::vec3((float)i, 1.0f, (float)j);
             grass_position[index++] = pos;
             // map可以直接遍历所有行
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
     SingleRender(shader, grass_count, grass_position, manager->GRASS);
@@ -35,7 +35,7 @@ void World::Render(Shader& shader) {
         for (int j = 1; j < 5; j++) {
             glm::vec3 pos = glm::vec3((float)i, (float)j, -10.0f);
             brick_position[index++] = pos;
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
 
@@ -43,7 +43,7 @@ void World::Render(Shader& shader) {
         for (int j = 1; j < 5; j++) {
             glm::vec3 pos = glm::vec3(-10.0f, (float)j, (float)i);
             brick_position[index++] = pos;
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
 
@@ -51,7 +51,7 @@ void World::Render(Shader& shader) {
         for (int j = 1; j < 5; j++) {
             glm::vec3 pos = glm::vec3((float)i, (float)j, 9.0f);
             brick_position[index++] = pos;
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
 
@@ -59,7 +59,7 @@ void World::Render(Shader& shader) {
         for (int j = 1; j < 5; j++) {
             glm::vec3 pos = glm::vec3(9.0f, (float)j, (float)i);
             brick_position[index++] = pos;
-            engine->m[round(pos.y)].push_back(pos);
+            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
         }
     }
     SingleRender(shader, brick_count, brick_position, manager->BRICK);
