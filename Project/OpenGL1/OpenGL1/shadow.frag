@@ -22,6 +22,7 @@ uniform float specularStrength;
 uniform float shininess;
 uniform float diffuseFactor;
 
+
 float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
 {
     // 执行透视算法，将将w转化为(-1, 1)
@@ -65,6 +66,8 @@ void main()
         discard;
     vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;           
     vec3 normal = normalize(fs_in.Normal);
+    //计算距离衰减
+   
     // ambient环境光
     vec3 ambient =  ambientStrength * lightColor;
     // diffuse 漫反射
@@ -77,7 +80,8 @@ void main()
     float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64);
-    vec3 specular = spec * lightColor * specularStrength;    
+    vec3 specular = spec * lightColor * specularStrength;  
+
     // 计算阴影
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace, normal, lightDir);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;

@@ -1,5 +1,8 @@
 #include "World.h"
+
 World* World::instance = NULL;
+
+
 
 // 整个世界的渲染
 void World::Render(Shader& shader) {
@@ -9,12 +12,27 @@ void World::Render(Shader& shader) {
     glm::vec3 grass_position[460];
     int grass_count = 460;
     int index = 0;
+	glm::vec3 vine_position[400];
+	int vine_count = 400;
+	int index1 = 0;
+
     for (int i = -10; i < 10; i++) {
         for (int j = -10; j < 10; j++) {
-            glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
-            grass_position[index++] = pos;
-            // 添加到物理引擎中
-            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+			if ((i > 7 || i < 0|| j != -5)&&(i!=-5||j<0||j>4)) {
+				int flag = 1;
+				if (i % 5 == 1 || j % 3 == 1 ||(i*j%7==1)|| (i*j % 9 == 1)) {
+					flag = 0;
+				}
+				glm::vec3 pos = glm::vec3((float)i, 0.0f, (float)j);
+				if (flag == 1) {
+					grass_position[index++] = pos;
+				}
+				else vine_position[index1++] = pos;
+				
+				// 添加到物理引擎中
+				engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+			}
+           
         }
     }
     for (int i = -5; i < 5; i++) {
@@ -45,7 +63,7 @@ void World::Render(Shader& shader) {
         }
     }
     SingleRender(shader, grass_count, grass_position, manager->GRASS);
-
+	SingleRender(shader, vine_count, vine_position, manager->VINE);
    // 建立围墙
     glm::vec3 brick_position[400];
     int brick_count = 400;
@@ -84,23 +102,33 @@ void World::Render(Shader& shader) {
     SingleRender(shader, brick_count, brick_position, manager->BRICK);
 
     // 水流
-    glm::vec3 water_position[5];
-    int water_count = 5;
+    glm::vec3 water_position[20];
+    int water_count = 20;
     index = 0;
-    for (int i = 4; i < 8; i++) {
-        glm::vec3 pos = glm::vec3((float)i, 1.0f, 3.0f);
-        water_position[index++] = pos;
-        //水不做碰撞
-        engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
+    for (int i = 0; i < 8; i++) {
+			glm::vec3 pos = glm::vec3((float)i, 0.0f, -5.0f);
+			water_position[index++] = pos;
+			//水不做碰撞
+			engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;	
     }
+	for (int i = 0; i < 5; i++) {
+		glm::vec3 pos = glm::vec3(-5.0f, 0.0f, (float)i);
+		water_position[index++] = pos;
+		//水不做碰撞
+		engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
+	}
     SingleRender(shader, water_count, water_position, manager->WATER);
     // 树
     DrawTree(manager->Tree_oak, manager->Leave_oak, glm::vec3(-3.0f, 1.0f, 0.0f), shader);
     DrawTree(manager->Tree_jungle, manager->Leave_jungle, glm::vec3(-6.0f, 1.0f, -2.0f), shader);
     DrawTree(manager->Tree_birch, manager->Leave_birch, glm::vec3(-7.0f, 1.0f, -7.0f), shader);
     // 蘑菇
-    glm::vec3 mushroom_position[1] = { glm::vec3(3.0f) };
-    SingleRender(shader, 1, mushroom_position, manager->MUSHROOM);
+    glm::vec3 mushroom_position[3] = { glm::vec3(3.0f), glm::vec3(1.0f,2.0f,7.0f) ,glm::vec3(2.0f,6.0f,9.5f)  };
+    SingleRender(shader, 3, mushroom_position, manager->MUSHROOM);
+	glm::vec3 flower_position[3] = { glm::vec3(1.0f,1.0f,-8.0f) ,glm::vec3(4.0f,2.0f,-5.0f) ,glm::vec3(-9.0f,6.0f,9.5f) };
+	SingleRender(shader, 3, flower_position, manager->FLOWER);
+	
+
 }
 
 void World::SingleRender(Shader& shader, int count, glm::vec3* position, ResourceManager::BlockType block) {
