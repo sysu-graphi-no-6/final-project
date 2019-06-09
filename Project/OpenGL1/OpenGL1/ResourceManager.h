@@ -7,11 +7,12 @@
 #include <map>
 using namespace std;
 #define MAX_BLOCK 6400
+
 /*进行资源管理，比如画出立方体等*/
 class ResourceManager {
 public:
-   
-    static ResourceManager* getInstance() {
+
+     ResourceManager* getInstance() {
         if (instance == NULL) {
             instance = new ResourceManager();
         }
@@ -29,12 +30,14 @@ public:
     // 方块种类
     enum BlockType {
         GRASS, BRICK, DIRT, WATER, Tree_birch, Tree_oak, Tree_jungle, Leave_oak, Leave_birch, Leave_jungle,
-        MUSHROOM,
+        MUSHROOM, FLOWER,VINE,STONE,
     };
     // 加载纹理
-    unsigned int loadTexture(GLchar* path);
+    unsigned int loadTexture(const GLchar* path);
     // 加载多张图片，比如水
-    unsigned int* loadTextures(GLchar* path, int count);
+    unsigned int* loadTextures(const GLchar* path, int count);
+	//加载模型
+
     void setAllTexture() {
         textureID["grass_side"] = loadTexture("resource/blocks/grass_path_side.png");
         textureID["grass_top"] = loadTexture("resource/blocks/grass_path_top.png");
@@ -55,6 +58,9 @@ public:
         textureID["leave_oak"] = loadTexture("resource/blocks/leaves_oak.png");
         // 蘑菇
         textureID["mushroom"] = loadTexture("resource/blocks/mushroom_red.png");
+		textureID["flower"] = loadTexture("resource/blocks/flower_oxeye_daisy.png");
+		textureID["vine"] = loadTexture("resource/blocks/end_stone.png");
+		textureID["stone"] = loadTexture("resource/blocks/end_stone.png");
     }
     //----------------渲染----------------------------
     // 选择渲染的方向
@@ -64,6 +70,7 @@ public:
     };
     // 在while循环中方块的渲染(每个面可以不同材质)
     void RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount = 1);
+
 
     // 渲染整个方块
     void RenderCube(unsigned int texture, unsigned int drawCount = 1);
@@ -150,6 +157,8 @@ public:
 private:
     // 材质和对应的id
     map<string, unsigned int> textureID;
+	//模型
+
     // 可以作为动画的材质
     map<string, pair<int, unsigned int*> > multipleTextureID;
     unsigned int instanceVBO;

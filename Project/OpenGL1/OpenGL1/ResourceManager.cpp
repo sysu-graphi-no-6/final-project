@@ -1,7 +1,9 @@
 #include "ResourceManager.h"
 #define STB_IMAGE_IMPLEMENTATION
+#pragma warning(disable:4996)
 #include "stb_image.h"
 ResourceManager* ResourceManager::instance = NULL;
+
 
 void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir, unsigned int drawCount) {
     glActiveTexture(GL_TEXTURE0);
@@ -46,7 +48,7 @@ void ResourceManager::RenderCube(unsigned int texture, unsigned int drawCount) {
     RenderFace(texture, BACK, drawCount);
 }
 
-unsigned int ResourceManager::loadTexture(GLchar* path)
+unsigned int ResourceManager::loadTexture(const GLchar* path)
 {
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -76,7 +78,7 @@ unsigned int ResourceManager::loadTexture(GLchar* path)
     return textureID;
 }
 
-unsigned int* ResourceManager::loadTextures(GLchar* path, int count) {
+unsigned int* ResourceManager::loadTextures( const GLchar* path, int count) {
     unsigned int* textures = new unsigned int[count];
     int width, height, nrChannels;
     unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
@@ -197,6 +199,12 @@ void ResourceManager::RenderScene(Shader &shader, BlockType blockType, unsigned 
         RenderFace(textureID["grass_side"], FRONT, drawCount);
         RenderFace(textureID["grass_side"], BACK, drawCount);
         break;
+	case FLOWER:
+		RenderFace(textureID["flower"], CROSS, drawCount);
+		break;
+	case VINE:
+		RenderCube(textureID["vine"], drawCount);
+		break;
     case BRICK:
         RenderCube(textureID["brick"], drawCount);
         break;
