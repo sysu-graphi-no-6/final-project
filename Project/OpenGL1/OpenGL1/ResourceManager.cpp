@@ -4,6 +4,20 @@
 #include "stb_image.h"
 ResourceManager* ResourceManager::instance = NULL;
 
+Model& ResourceManager::LoadModel(const GLchar* file, std::string name) {
+	Models[name] = loadModelFromFile(file);
+	return Models[name];
+
+}
+Model& ResourceManager::GetModel(std::string name) {
+	return Models[name];
+}
+Model ResourceManager::loadModelFromFile(const GLchar* file) {
+	Model model;
+	model.LoadModel(file);
+	return model;
+}
+
 
 void ResourceManager::RenderFace(unsigned int texture, RenderDirection dir, unsigned int drawCount) {
     glActiveTexture(GL_TEXTURE0);
@@ -250,6 +264,7 @@ void ResourceManager::RenderScene(Shader &shader, BlockType blockType, unsigned 
     case MUSHROOM:
         RenderFace(textureID["mushroom"],CROSS, drawCount);
         break;
+		
     default:
         RenderFace(textureID["grass_top"], TOP, drawCount);
         RenderFace(textureID["dirt"], BOTTOM, drawCount);
@@ -267,4 +282,15 @@ void ResourceManager::RenderScene(Shader &shader, BlockType blockType, unsigned 
         water_state = (water_state + 1) % 32;
     }
 
+}
+void ResourceManager::RenderModelScene(Shader &shader, ModelType modelType, unsigned int drawCount) {
+	glm::mat4 model = glm::mat4(1.0f);
+	 model = glm::scale(model, glm::vec3(0.1,0.1,0.1));
+	shader.setMat4("model", model);
+	switch (modelType)
+	{
+		case rose:
+		Models["rose"].Draw(&shader);
+
+	}
 }

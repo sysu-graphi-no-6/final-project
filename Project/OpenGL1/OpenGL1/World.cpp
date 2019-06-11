@@ -127,10 +127,18 @@ void World::Render(Shader& shader) {
     SingleRender(shader, 3, mushroom_position, manager->MUSHROOM);
 	glm::vec3 flower_position[3] = { glm::vec3(1.0f,1.0f,-8.0f) ,glm::vec3(4.0f,2.0f,-5.0f) ,glm::vec3(-9.0f,6.0f,9.5f) };
 	SingleRender(shader, 3, flower_position, manager->FLOWER);
-	
-
+	glm::vec3 model_position[3] = { glm::vec3(0.0f,5.0f,0.0f) };
+	Rendermodel(shader, 1, model_position, manager->rose);
 }
 
+void World::Rendermodel(Shader& shader, int count, glm::vec3* position, ResourceManager::ModelType model) {
+	ResourceManager* manager = ResourceManager::getInstance();
+	glBindBuffer(GL_ARRAY_BUFFER, manager->getInstanceVBO());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::vec3) * count, &position[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	manager->RenderModelScene(shader, model, count);
+
+}
 void World::SingleRender(Shader& shader, int count, glm::vec3* position, ResourceManager::BlockType block) {
     ResourceManager* manager = ResourceManager::getInstance();
     glBindBuffer(GL_ARRAY_BUFFER, manager->getInstanceVBO());
@@ -171,3 +179,4 @@ void World::DrawTree(ResourceManager::BlockType tree_type, ResourceManager::Bloc
     }
     SingleRender(shader, count, leaves, leave_type);
 }
+

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "Model.h"
 using namespace std;
 #define MAX_BLOCK 6400
 
@@ -12,7 +13,7 @@ using namespace std;
 class ResourceManager {
 public:
 
-     ResourceManager* getInstance() {
+     static ResourceManager* getInstance() {
         if (instance == NULL) {
             instance = new ResourceManager();
         }
@@ -32,12 +33,17 @@ public:
         GRASS, BRICK, DIRT, WATER, Tree_birch, Tree_oak, Tree_jungle, Leave_oak, Leave_birch, Leave_jungle,
         MUSHROOM, FLOWER,VINE,STONE,
     };
+	enum ModelType {
+		rose
+	};
     // 加载纹理
     unsigned int loadTexture(const GLchar* path);
     // 加载多张图片，比如水
     unsigned int* loadTextures(const GLchar* path, int count);
 	//加载模型
-
+	Model& LoadModel(const GLchar* file, std::string name);
+	Model& GetModel(std::string name);
+	Model loadModelFromFile(const GLchar* file);
     void setAllTexture() {
         textureID["grass_side"] = loadTexture("resource/blocks/grass_path_side.png");
         textureID["grass_top"] = loadTexture("resource/blocks/grass_path_top.png");
@@ -61,6 +67,7 @@ public:
 		textureID["flower"] = loadTexture("resource/blocks/flower_oxeye_daisy.png");
 		textureID["vine"] = loadTexture("resource/blocks/end_stone.png");
 		textureID["stone"] = loadTexture("resource/blocks/end_stone.png");
+		Models["rose"] = LoadModel("resource/rose/Models and Textures/rose.obj","rose");
     }
     //----------------渲染----------------------------
     // 选择渲染的方向
@@ -70,7 +77,7 @@ public:
     };
     // 在while循环中方块的渲染(每个面可以不同材质)
     void RenderScene(Shader &shader, BlockType blockType, unsigned int drawCount = 1);
-
+	void RenderModelScene(Shader &shader, ModelType modelType, unsigned int drawCount =1);
 
     // 渲染整个方块
     void RenderCube(unsigned int texture, unsigned int drawCount = 1);
@@ -158,7 +165,7 @@ private:
     // 材质和对应的id
     map<string, unsigned int> textureID;
 	//模型
-
+	map<string, Model> 		Models;
     // 可以作为动画的材质
     map<string, pair<int, unsigned int*> > multipleTextureID;
     unsigned int instanceVBO;
