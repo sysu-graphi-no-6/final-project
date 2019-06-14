@@ -107,7 +107,7 @@ int main()
 		GLfloat near_plane = 1.0f, far_plane = 7.5f;
 		// Í¸ÊÓÍ¶Ó°
 		lightProjection = glm::perspective(100.0f, (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
-		//lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
 		lightSpaceMatrix = lightProjection * lightView;
 		shaderManager->simpleDepthShader.use();
 		shaderManager->simpleDepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);

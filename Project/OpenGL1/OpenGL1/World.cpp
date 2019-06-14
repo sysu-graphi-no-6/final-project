@@ -11,6 +11,16 @@ void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
     PhysicsEngine* engine = PhysicsEngine::getInstance();
 	Camera * camera = Camera::getInstance();
+  /*  glm::vec3 grass_position[10];
+    int index = 0;
+    for (int i = -1; i < 2; ++i) {
+        for (int j = -1; j < 2; ++j) {
+            grass_position[index] = glm::vec3(i, 0, j);
+            index++;
+        }
+    }
+    grass_position[index] = glm::vec3(0, 2, 0);
+    SingleRender(shader, 10, grass_position, manager->GRASS);*/
     // 画出草地
     glm::vec3 grass_position[460];
     int grass_count = 460;
@@ -112,35 +122,36 @@ void World::Render(Shader& shader) {
 			glm::vec3 pos = glm::vec3((float)i, 0.0f, -5.0f);
 			water_position[index++] = pos;
 			//水不做碰撞
-			//engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;	
+			engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;	
     }
 	for (int i = 0; i < 5; i++) {
 		glm::vec3 pos = glm::vec3(-5.0f, 0.0f, (float)i);
 		water_position[index++] = pos;
 		//水不做碰撞
-		//engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
+		engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
 	}
     SingleRender(shader, water_count, water_position, manager->WATER);
     // 树
     DrawTree(manager->Tree_oak, manager->Leave_oak, glm::vec3(-3.0f, 1.0f, 0.0f), shader);
     DrawTree(manager->Tree_jungle, manager->Leave_jungle, glm::vec3(-6.0f, 1.0f, -2.0f), shader);
     DrawTree(manager->Tree_birch, manager->Leave_birch, glm::vec3(-7.0f, 1.0f, -7.0f), shader);
-    // 蘑菇
-   
-	for (int i = 0; i < 3; i++) {
-		//engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = true;
-		if (engine->CheckCollision(camera->Position, mushroom_position[i])) {
-            int index = 0;
-            while (engine->m[rand() % 18 - 9][0][rand() % 18 - 9]) {
-                srand(index);  // 产生随机种子  把0换成NULL也行
-                index++;
-            }
-			mushroom_position[i].x = rand() % 18 - 9;
-			mushroom_position[i].y = 0;
-			mushroom_position[i].z =  rand() % 18 - 9;
-		}
-	}
-    SingleRender(shader, 3, mushroom_position, manager->MUSHROOM);
+ //   // 蘑菇
+ //   index = 0;
+	//for (int i = 0; i < 3; i++) {
+	//	//engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = true;
+	//	if (engine->CheckCollision(camera->Position, mushroom_position[i])) {
+ //           int index = 0;
+ //           while (engine->m[rand() % 18 - 9][0][rand() % 18 - 9]) {
+ //               srand(index);  // 产生随机种子  把0换成NULL也行
+ //               index++;
+ //           }
+	//		mushroom_position[i].x = rand() % 18 - 9;
+	//		mushroom_position[i].y = 0;
+	//		mushroom_position[i].z =  rand() % 18 - 9;
+ //           engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = false;
+	//	}
+	//}
+ //   SingleRender(shader, 3, mushroom_position, manager->MUSHROOM);
 	
 	
 	for (int i = 0; i < 3; i++) {
@@ -150,15 +161,16 @@ void World::Render(Shader& shader) {
 			flower_position[i].x= rand() % 18 - 9;
 			flower_position[i].y= rand() % 5 ;
 			flower_position[i].z = rand() % 18 - 9;
+            engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = false;
 
 		}
 	}
 	SingleRender(shader, 3, flower_position, manager->FLOWER);
-	/*glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,0.0f) };
+	glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,0.0f) };
 	engine->m[round(model_rose_position[0].y)][round(model_rose_position[0].x)][round(model_rose_position[0].z)] = true;
 	Rendermodel(shader, 1, model_rose_position, manager->rose);
 	glm::vec3 model_spider_position[1] = { glm::vec3(10.0f,4.0f,-7.0f) };
-	Rendermodel(shader, 1, model_spider_position, manager->spider);*/
+	Rendermodel(shader, 1, model_spider_position, manager->spider);
 }
 
 void World::Rendermodel(Shader& shader, int count, glm::vec3* position, ResourceManager::ModelType model) {

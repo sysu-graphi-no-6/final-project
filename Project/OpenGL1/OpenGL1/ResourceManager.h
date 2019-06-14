@@ -34,7 +34,7 @@ public:
         MUSHROOM, FLOWER,VINE,STONE,
     };
 	enum ModelType {
-		rose
+		rose, spider
 	};
     // 加载纹理
     unsigned int loadTexture(const GLchar* path);
@@ -160,7 +160,7 @@ public:
     }
 
 
-    void LoadTextureSplit(const GLchar* file, int count);
+    //void LoadTextureSplit(const GLchar* file, int count);
 private:
     // 材质和对应的id
     map<string, unsigned int> textureID;
