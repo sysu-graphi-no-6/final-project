@@ -119,8 +119,8 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
             afterMove.z = Position.z;
         }
        // afterMove = glm::vec3(getFloat(afterMove.x, remain), getFloat(afterMove.y, remain), getFloat(afterMove.z, remain));
-       cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
-       cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
+       //cout << "Pos:"<<Position.x << " " << Position.y << " " << Position.z << endl;
+      //cout << "move:" << afterMove.x << " " << afterMove.y << " " << afterMove.z << endl;
        //afterMove = glm::vec3((int)afterMove.x, (int)afterMove.y, (int)afterMove.z);
         if (PhysicsEngine::getInstance()->HorizontalCollisionDetect(Position, afterMove)) {
             if (!engine->isFreeAll && !engine->isJumping && !flysky) {

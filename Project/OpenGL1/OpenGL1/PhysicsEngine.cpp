@@ -1,106 +1,105 @@
-#include "PhysicsEngine.h"
+ï»¿#include "PhysicsEngine.h"
 
 PhysicsEngine* PhysicsEngine::instance = NULL;
 
 bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 currentPos, glm::vec3 nextPos) {
-    // ½øĞĞÏÂÒ»Î»ÖÃºÍÉÏÒ»Î»ÖÃµÄ·½ÏòÅĞ¶Ï
-    int axBiggerthanPx = 0;
-    int azBiggerthanPz = 0;
-    if (nextPos.x < currentPos.x) {
-        axBiggerthanPx = -1;
-    }
-    else if (nextPos.x > currentPos.x) {
-        axBiggerthanPx = 1;
-    }
-    if (nextPos.z < currentPos.z) {
-        azBiggerthanPz = -1;
-    }
-    else if (nextPos.z > currentPos.z) {
-        azBiggerthanPz = 1;
-    }
-    int y_round = round(currentPos.y);
-    int y_min = y_round - 1;
 
-    // Á½¸ö¸ß¶È£¬Ã¿¸ö¸ß¶È8¸ö·½Ïò½øĞĞÅö×²¼ì²â
-    /*
-        * * *
-        *   *
-        * * *
-    */
-    if (axBiggerthanPx == -1 && azBiggerthanPz == -1) {
-        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == -1 && azBiggerthanPz == 0) {
-        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z)] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z)] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == -1 && azBiggerthanPz == 1) {
-        if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == 0 && azBiggerthanPz == -1) {
-        if (m[y_round][round(currentPos.x)][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x)][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == 0 && azBiggerthanPz == 1) {
-        if (m[y_round][round(currentPos.x)][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x)][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == 1 && azBiggerthanPz == -1) {
-        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == 1 && azBiggerthanPz == 0) {
-        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z)] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z)] == true) {
-            return false;
-        }
-    }
-    else if (axBiggerthanPx == 1 && azBiggerthanPz == 1) {
-        if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-        if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
-            return false;
-        }
-    }
-    return true;
+	int axBiggerthanPx = 0;
+	int azBiggerthanPz = 0;
+	if (nextPos.x < currentPos.x) {
+		axBiggerthanPx = -1;
+	}
+	else if (nextPos.x > currentPos.x) {
+		axBiggerthanPx = 1;
+	}
+	if (nextPos.z < currentPos.z) {
+		azBiggerthanPz = -1;
+	}
+	else if (nextPos.z > currentPos.z) {
+		azBiggerthanPz = 1;
+	}
+	int y_round = round(currentPos.y);
+	int y_min = y_round - 1;
+
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ß¶È£ï¿½Ã¿ï¿½ï¿½ï¿½ß¶ï¿½8ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½
+	/*
+		* * *
+		*   *
+		* * *
+	*/
+	if (axBiggerthanPx == -1 && azBiggerthanPz == -1) {
+		if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == -1 && azBiggerthanPz == 0) {
+		if (m[y_round][round(currentPos.x) - 1][round(currentPos.z)] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) - 1][round(currentPos.z)] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == -1 && azBiggerthanPz == 1) {
+		if (m[y_round][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) - 1][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == 0 && azBiggerthanPz == -1) {
+		if (m[y_round][round(currentPos.x)][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x)][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == 0 && azBiggerthanPz == 1) {
+		if (m[y_round][round(currentPos.x)][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x)][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == 1 && azBiggerthanPz == -1) {
+		if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) - 1] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == 1 && azBiggerthanPz == 0) {
+		if (m[y_round][round(currentPos.x) + 1][round(currentPos.z)] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) + 1][round(currentPos.z)] == true) {
+			return false;
+		}
+	}
+	else if (axBiggerthanPx == 1 && azBiggerthanPz == 1) {
+		if (m[y_round][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+		if (m[y_min][round(currentPos.x) + 1][round(currentPos.z) + 1] == true) {
+			return false;
+		}
+	}
+	return true;
 }
-
 bool PhysicsEngine::UpVerticalCollisionDetect(glm::vec3 pos) {
     if (m[round(pos.y + 0.5f)][round(pos.x)][round(pos.z)] == true) {
         return false;
     }
     return true;
 }
-// µ¯ÌøÊ±µÄ¼ì²â
+// å¼¹è·³æ—¶çš„æ£€æµ‹
 bool PhysicsEngine::DownVerticalCollisionDetect(glm::vec3 pos) {
     if (m[round(pos.y - 1.5f)][round(pos.x)][round(pos.z)] == true) {
         return false;
@@ -108,7 +107,7 @@ bool PhysicsEngine::DownVerticalCollisionDetect(glm::vec3 pos) {
     return true;
 }
 
-// ×ßÊ±µÄ¼ì²â
+// èµ°æ—¶çš„æ£€æµ‹
 bool PhysicsEngine::WalkingVerticalCollisionDetect(glm::vec3 pos) {
     if (m[round(pos.y - 2.0f)][round(pos.x)][round(pos.z)] == true) {
         return false;
@@ -135,6 +134,16 @@ bool PhysicsEngine::VerticalCollisionDetect(glm::vec3 pos, float& downY) {
     //}
     return true;
 }
+bool PhysicsEngine::CheckCollision(glm::vec3 pos, glm::vec3 next_pos) // AABB - AABB collision
+{
+	// xè½´æ–¹å‘ç¢°æ’ï¼Ÿ
+	bool collisionX = (abs(pos.x-next_pos.x) <=0.6 );
+	// yè½´æ–¹å‘ç¢°æ’ï¼Ÿ
+	bool collisionY = (abs(pos.y - next_pos.y) <= 2);
+	bool collisionZ = (abs(pos.z - next_pos.z) <= 0.6);
+	// åªæœ‰ä¸¤ä¸ªè½´å‘éƒ½æœ‰ç¢°æ’æ—¶æ‰ç¢°æ’
+	return collisionX && collisionY&&collisionZ;
+}
 
 PhysicsEngine::PhysicsEngine() {
     isJumping = false;
@@ -146,4 +155,5 @@ PhysicsEngine::PhysicsEngine() {
     gravityFactor = -9.8f;
     threshold = 2;
     max_threshold = 1;
+	destroyed = false;
 }

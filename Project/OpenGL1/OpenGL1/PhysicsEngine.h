@@ -45,10 +45,11 @@ public:
     bool UpVerticalCollisionDetect(glm::vec3 pos);
     bool DownVerticalCollisionDetect(glm::vec3 pos);
     bool WalkingVerticalCollisionDetect(glm::vec3 pos);
+	bool CheckCollision(glm::vec3 pos, glm::vec3 next_pos);
     //------碰撞检测参数-------
     int threshold;
     int max_threshold = 2;
-
+	
     //----------弹跳相关系数 ----------------------------
     float currentHeight;
     float initialSpeed;
@@ -57,6 +58,7 @@ public:
     float gravityFactor;
     bool isJumping;
     bool isFreeAll;
+	bool destroyed;
     // 利用map 只对高度进行遍历
     // y x z
     map<int, map<int, map<int, bool> > > m;
