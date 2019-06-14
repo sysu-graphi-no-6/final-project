@@ -15,6 +15,7 @@ uniform sampler2D shadowMap;
 uniform vec3 lightColor;
 uniform vec3 lightPos;
 uniform vec3 viewPos;
+uniform vec3 dir;
 // uniform vec3 objectColor;
 
 uniform float ambientStrength;
@@ -58,13 +59,31 @@ float ShadowCalculation(vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
     return shadow;
 }
 
-void main()
+vec3 CalcDirLight(vec3 objectColor)
 {
-    // 进行材质处理，如果透明度小于0.1的片段丢弃
-    vec4 texColor = texture(diffuseTexture, fs_in.TexCoords);
-    if(texColor.a < 0.1)
-        discard;
-    vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;           
+    vec3 normal = normalize(fs_in.Normal);
+    //计算距离衰减
+   
+    // ambient环境光
+    vec3 ambient =  ambientStrength * lightColor;
+    // diffuse 漫反射
+    vec3 lightDir = normalize(-dir);
+    float diff = max(dot(lightDir, normal), 0.0);
+    vec3 diffuse = diff * lightColor * diffuseFactor;
+    // specular 镜面
+    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = 0.0;
+    vec3 halfwayDir = normalize(lightDir + viewDir);  
+    spec = pow(max(dot(normal, halfwayDir), 0.0), 64);
+    vec3 specular = spec * lightColor * specularStrength;  
+
+    // 计算阴影
+    float shadow = ShadowCalculation(fs_in.FragPosLightSpace, normal, lightDir);                      
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
+    return lighting;
+}
+vec3 spotLight(vec3 objectColor){
     vec3 normal = normalize(fs_in.Normal);
     //计算距离衰减
    
@@ -85,6 +104,17 @@ void main()
     // 计算阴影
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace, normal, lightDir);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
+    return lighting;
+}
+void main()
+{
+    // 进行材质处理，如果透明度小于0.1的片段丢弃
+    vec4 texColor = texture(diffuseTexture, fs_in.TexCoords);
+    if(texColor.a < 0.1)
+        discard;
+    vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;           
+    vec3 lighting = spotLight(objectColor);
+    lighting += CalcDirLight(objectColor);
     // gamma
     float gamma = 1.2;
     lighting = pow(lighting, vec3(1.0/gamma));

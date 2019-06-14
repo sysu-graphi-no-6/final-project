@@ -15,14 +15,6 @@ public:
         return instance;
     }
 
-    void DirectionalLightSet() {
-        // 平行光源
-        directionalLight.setVec3("dirLight.direction", direcionalDirection);
-        directionalLight.setVec3("dirLight.ambient", directionalAmbient);
-        directionalLight.setVec3("dirLight.diffuse", directionalDiffuse);
-        directionalLight.setVec3("dirLight.specular", directionalSpecular);
-    }
-
     void ObjectShaderSet(glm::mat4 projection, glm::mat4 view, glm::vec3 lightPos, glm::mat4 lightSpaceMatrix) {
         // 设置可变的着色器参数
         blockShader.setMat4("projection", projection);
@@ -31,7 +23,7 @@ public:
         blockShader.setVec3("lightPos", lightPos);
         blockShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
         // 物体反光特性设置
-        blockShader.setFloat("ambientStrength", 0.3f);
+        blockShader.setFloat("ambientStrength", 0.1f);
         blockShader.setFloat("shininess", 64.0f);
         blockShader.setFloat("diffuseFactor", 1.0f);
         blockShader.setFloat("specularStrength", 1.0f);
@@ -39,7 +31,6 @@ public:
     }
     Shader blockShader;
     Shader simpleDepthShader;
-    Shader directionalLight;
 
 private:
     static ShaderManager* instance;

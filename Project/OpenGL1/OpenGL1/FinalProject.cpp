@@ -95,8 +95,6 @@ int main()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		// 设置平行光
-		shaderManager->DirectionalLightSet();
        /* glEnable(GL_FRAMEBUFFER_SRGB);*/
 
 		 // ----------------阴影部分----------------------------------------------
@@ -138,8 +136,6 @@ int main()
 		glm::mat4 model(1.0f);
 		view = glm::lookAt(camera->Position, camera->Position + camera->Front, camera->Up);
 		projection = glm::perspective(glm::radians(camera->Zoom), (float)windowsWidth / (float)windowsHeight, 0.1f, 100.0f);
-		shaderManager->directionalLight.setMat4("projection", projection);
-		shaderManager->directionalLight.setMat4("view", view);
 
 
 		glActiveTexture(GL_TEXTURE0);
