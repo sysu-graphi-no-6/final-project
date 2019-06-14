@@ -69,7 +69,10 @@ void Camera::ProcessKeyboard(Direction direction, float deltaTime)
     float cameraSpeed = MovementSpeed * deltaTime;
     if (direction == FLYSKY) {
         if (!flysky)cout << "飞天模式打开！" << endl;
-        else cout << "飞天模式关闭！" << endl;
+        else {
+            cout << "飞天模式关闭！" << endl;
+            FreeAll();
+        }
         flysky = !flysky;
         return;
     }

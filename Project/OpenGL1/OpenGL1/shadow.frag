@@ -1,4 +1,4 @@
-#version 450 core
+﻿#version 450 core
 
 out vec4 FragColor;
 
@@ -85,5 +85,9 @@ void main()
     // 计算阴影
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace, normal, lightDir);                      
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * objectColor;
+    // gamma
+    float gamma = 1.2;
+    lighting = pow(lighting, vec3(1.0/gamma));
     FragColor = vec4(lighting, 1.0);
+    
 }

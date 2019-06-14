@@ -155,19 +155,19 @@ void World::Render(Shader& shader) {
 	
 	
 	for (int i = 0; i < 3; i++) {
-		engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = true;
+		//engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = true;
 		if (engine->CheckCollision(camera->Position, flower_position[i])) {
 			srand((int)time(0));  // 产生随机种子  把0换成NULL也行
 			flower_position[i].x= rand() % 18 - 9;
 			flower_position[i].y= rand() % 5 ;
 			flower_position[i].z = rand() % 18 - 9;
-            engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = false;
+            //engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = false;
 
 		}
 	}
 	SingleRender(shader, 3, flower_position, manager->FLOWER);
-	glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,0.0f) };
-	engine->m[round(model_rose_position[0].y)][round(model_rose_position[0].x)][round(model_rose_position[0].z)] = true;
+	glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,-4.0f) };
+	//engine->m[round(model_rose_position[0].y)][round(model_rose_position[0].x)][round(model_rose_position[0].z)] = true;
 	Rendermodel(shader, 1, model_rose_position, manager->rose);
 	glm::vec3 model_spider_position[1] = { glm::vec3(10.0f,4.0f,-7.0f) };
 	Rendermodel(shader, 1, model_spider_position, manager->spider);

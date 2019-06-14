@@ -88,6 +88,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 
+
 		// 按键控制
 		escapePress(window, deltaTime);
 
@@ -96,7 +97,7 @@ int main()
 		lastFrame = currentFrame;
 		// 设置平行光
 		shaderManager->DirectionalLightSet();
-		
+       /* glEnable(GL_FRAMEBUFFER_SRGB);*/
 
 		 // ----------------阴影部分----------------------------------------------
 		 // 为了修复peter游移，进行正面剔除
@@ -150,8 +151,8 @@ int main()
 
 	   /* ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-*/
-// 渲染天空
+        */
+        // 渲染天空
 		camera->UpdatePositionEachSecond(deltaTime);
 		manager->RenderSky(projection);
 		glfwSwapBuffers(window);
