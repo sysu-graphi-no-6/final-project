@@ -67,42 +67,42 @@ void World::Render(Shader& shader) {
     }
     SingleRender(shader, grass_count, grass_position, manager->GRASS);
 	SingleRender(shader, vine_count, vine_position, manager->VINE);
-   // 建立围墙
-    glm::vec3 brick_position[400];
-    int brick_count = 400;
-    index = 0;
-    for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
-            glm::vec3 pos = glm::vec3((float)i, (float)j, -10.0f);
-            brick_position[index++] = pos;
-            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
-        }
-    }
+   //// 建立围墙
+   // glm::vec3 brick_position[400];
+   // int brick_count = 400;
+   // index = 0;
+   // for (int i = -10; i < 10; i++) {
+   //     for (int j = 1; j < 5; j++) {
+   //         glm::vec3 pos = glm::vec3((float)i, (float)j, -10.0f);
+   //         brick_position[index++] = pos;
+   //         engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+   //     }
+   // }
 
-    for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
-            glm::vec3 pos = glm::vec3(-10.0f, (float)j, (float)i);
-            brick_position[index++] = pos;
-            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
-        }
-    }
+   // for (int i = -10; i < 10; i++) {
+   //     for (int j = 1; j < 5; j++) {
+   //         glm::vec3 pos = glm::vec3(-10.0f, (float)j, (float)i);
+   //         brick_position[index++] = pos;
+   //         engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+   //     }
+   // }
 
-    for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
-            glm::vec3 pos = glm::vec3((float)i, (float)j, 9.0f);
-            brick_position[index++] = pos;
-            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
-        }
-    }
+   // for (int i = -10; i < 10; i++) {
+   //     for (int j = 1; j < 5; j++) {
+   //         glm::vec3 pos = glm::vec3((float)i, (float)j, 9.0f);
+   //         brick_position[index++] = pos;
+   //         engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+   //     }
+   // }
 
-    for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
-            glm::vec3 pos = glm::vec3(9.0f, (float)j, (float)i);
-            brick_position[index++] = pos;
-            engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
-        }
-    }
-    SingleRender(shader, brick_count, brick_position, manager->BRICK);
+   // for (int i = -10; i < 10; i++) {
+   //     for (int j = 1; j < 5; j++) {
+   //         glm::vec3 pos = glm::vec3(9.0f, (float)j, (float)i);
+   //         brick_position[index++] = pos;
+   //         engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = true;
+   //     }
+   // }
+   // SingleRender(shader, brick_count, brick_position, manager->BRICK);
 
     // 水流
     glm::vec3 water_position[20];
@@ -112,13 +112,13 @@ void World::Render(Shader& shader) {
 			glm::vec3 pos = glm::vec3((float)i, 0.0f, -5.0f);
 			water_position[index++] = pos;
 			//水不做碰撞
-			engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;	
+			//engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;	
     }
 	for (int i = 0; i < 5; i++) {
 		glm::vec3 pos = glm::vec3(-5.0f, 0.0f, (float)i);
 		water_position[index++] = pos;
 		//水不做碰撞
-		engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
+		//engine->m[round(pos.y)][round(pos.x)][round(pos.z)] = false;
 	}
     SingleRender(shader, water_count, water_position, manager->WATER);
     // 树
@@ -128,11 +128,15 @@ void World::Render(Shader& shader) {
     // 蘑菇
    
 	for (int i = 0; i < 3; i++) {
-		engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = true;
+		//engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = true;
 		if (engine->CheckCollision(camera->Position, mushroom_position[i])) {
-			srand((int)time(0));  // 产生随机种子  把0换成NULL也行
+            int index = 0;
+            while (engine->m[rand() % 18 - 9][0][rand() % 18 - 9]) {
+                srand(index);  // 产生随机种子  把0换成NULL也行
+                index++;
+            }
 			mushroom_position[i].x = rand() % 18 - 9;
-			mushroom_position[i].y = rand() % 5 ;
+			mushroom_position[i].y = 0;
 			mushroom_position[i].z =  rand() % 18 - 9;
 		}
 	}
@@ -150,11 +154,11 @@ void World::Render(Shader& shader) {
 		}
 	}
 	SingleRender(shader, 3, flower_position, manager->FLOWER);
-	glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,0.0f) };
+	/*glm::vec3 model_rose_position[1] = { glm::vec3(0.0f,5.0f,0.0f) };
 	engine->m[round(model_rose_position[0].y)][round(model_rose_position[0].x)][round(model_rose_position[0].z)] = true;
 	Rendermodel(shader, 1, model_rose_position, manager->rose);
 	glm::vec3 model_spider_position[1] = { glm::vec3(10.0f,4.0f,-7.0f) };
-	Rendermodel(shader, 1, model_spider_position, manager->spider);
+	Rendermodel(shader, 1, model_spider_position, manager->spider);*/
 }
 
 void World::Rendermodel(Shader& shader, int count, glm::vec3* position, ResourceManager::ModelType model) {
