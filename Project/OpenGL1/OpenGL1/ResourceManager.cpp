@@ -126,7 +126,7 @@ unsigned int* ResourceManager::loadTextures( const GLchar* path, int count) {
     return NULL;
 }
 
-/* 下列函数接受留个纹理路径的vector*/
+/* 下列函数接受留个纹理路径的vector 用于天空盒*/
 unsigned int ResourceManager::loadCubemap(vector<std::string> faces)
 {
     unsigned int textureID;

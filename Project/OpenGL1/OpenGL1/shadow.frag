@@ -112,7 +112,7 @@ void main()
     vec4 texColor = texture(diffuseTexture, fs_in.TexCoords);
     if(texColor.a < 0.1)
         discard;
-    vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;           
+    vec3 objectColor = texture(diffuseTexture, fs_in.TexCoords).rgb;        
     vec3 lighting = spotLight(objectColor);
     lighting += CalcDirLight(objectColor);
     // gamma
