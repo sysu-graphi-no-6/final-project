@@ -6,6 +6,9 @@ World* World::instance = NULL;
 glm::vec3 flower_position[3] = { glm::vec3(1.0f,1.0f,-8.0f) ,glm::vec3(4.0f,2.0f,-5.0f) ,glm::vec3(-8.0f,6.0f,9.5f) };
 glm::vec3 mushroom_position[3] = { glm::vec3(3.0f), glm::vec3(1.0f,2.0f,7.0f) ,glm::vec3(2.0f,6.0f,9.5f) };
 
+int World::GetScore() {
+	return score;
+}
 // 整个世界的渲染
 void World::Render(Shader& shader) {
     ResourceManager* manager = ResourceManager::getInstance();
@@ -79,7 +82,7 @@ void World::Render(Shader& shader) {
     int brick_count = 0;
     index = 0;
     for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
+        for (int j = 0; j < 4; j++) {
 			brick_count++;
             glm::vec3 pos = glm::vec3((float)i, (float)j, -10.0f);
             brick_position[index++] = pos;
@@ -88,7 +91,7 @@ void World::Render(Shader& shader) {
     }
 
     for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
+        for (int j = 0; j < 4; j++) {
 			brick_count++;
             glm::vec3 pos = glm::vec3(-10.0f, (float)j, (float)i);
             brick_position[index++] = pos;
@@ -97,7 +100,7 @@ void World::Render(Shader& shader) {
     }
 
     for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
+        for (int j = 0; j < 4; j++) {
 			brick_count++;
             glm::vec3 pos = glm::vec3((float)i, (float)j, 9.0f);
             brick_position[index++] = pos;
@@ -106,7 +109,7 @@ void World::Render(Shader& shader) {
     }
 
     for (int i = -10; i < 10; i++) {
-        for (int j = 1; j < 5; j++) {
+        for (int j = 0; j < 4; j++) {
 			brick_count++;
             glm::vec3 pos = glm::vec3(9.0f, (float)j, (float)i);
             brick_position[index++] = pos;
@@ -141,6 +144,7 @@ void World::Render(Shader& shader) {
 	for (int i = 0; i < 3; i++) {
 		engine->m[round(mushroom_position[i].y)][round(mushroom_position[i].x)][round(mushroom_position[i].z)] = true;
 		if (engine->CheckCollision(camera->Position, mushroom_position[i])) {
+			score += 1;
 			srand((int)time(0));  // 产生随机种子  把0换成NULL也行
 			mushroom_position[i].x = rand() % 18 - 9;
 			mushroom_position[i].y = rand() % 5 ;
@@ -153,6 +157,7 @@ void World::Render(Shader& shader) {
 	for (int i = 0; i < 3; i++) {
 		//engine->m[round(flower_position[i].y)][round(flower_position[i].x)][round(flower_position[i].z)] = true;
 		if (engine->CheckCollision(camera->Position, flower_position[i])) {
+			score += 2;
 			srand((int)time(0));  // 产生随机种子  把0换成NULL也行
 			flower_position[i].x= rand() % 18 - 9;
 			flower_position[i].y= rand() % 5 ;
@@ -165,6 +170,7 @@ void World::Render(Shader& shader) {
 	Rendermodel(shader, 1, model_rose_position, manager->rose);
 	glm::vec3 model_spider_position[1] = { glm::vec3(10.0f,4.0f,-7.0f) };
 	Rendermodel(shader, 1, model_spider_position, manager->spider);
+
 }
 
 void World::Rendermodel(Shader& shader, int count, glm::vec3* position, ResourceManager::ModelType model) {

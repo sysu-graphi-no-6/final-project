@@ -23,6 +23,8 @@ public:
 	void Rendermodel(Shader& shader, int count, glm::vec3* position, ResourceManager::ModelType model);
     // »­³öÊ÷
     void DrawTree(ResourceManager::BlockType tree_type, ResourceManager::BlockType leave_type, glm::vec3 pos, Shader& shader);
+	int GetScore();
 private:
     static World* instance;
+	int score = 0;
 };

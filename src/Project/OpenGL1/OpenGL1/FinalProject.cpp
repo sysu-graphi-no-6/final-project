@@ -5,6 +5,7 @@
 #include "ResourceManager.h"
 #include "World.h"
 #include "ShaderManager.h"
+#include "TextRender.h"
 // ************************设定好的参数************************************
 const unsigned int windowsWidth = 2560;
 const unsigned int windowsHeight = 1440;
@@ -32,21 +33,6 @@ int main()
 	GLFWwindow* window = NULL;
 	if (initialWindow::initial(window, windowsWidth, windowsHeight, head) == -1) return -1;
 
-	/**
-	* IMGUI
-	*/
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-
-
-	// Setup Platform/Renderer bindings
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init("#version 450");
-	
 	shaderManager->InitialShader();
 	manager->setAllTexture();
 
@@ -85,6 +71,8 @@ int main()
 	// 渲染天空盒
 	manager->InitSky();
 
+	test_vao(windowsWidth, windowsHeight);
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -111,6 +99,8 @@ int main()
 		shaderManager->simpleDepthShader.use();
 		shaderManager->simpleDepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
+		shaderManager->textshader.use();
+		
 		// 渲染深度贴图
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -144,10 +134,21 @@ int main()
 		// 画出物体
 		world->Render(shaderManager->blockShader);
 
-
+		
+		char str[20];
+		sprintf_s(str, "Score = %d", world->GetScore());
+		RenderText(str, 60, 1000, 1.0f, glm::vec3(1.0f, 1.0f, 1.0f), windowsWidth, windowsHeight);
+		char str_s[20];
+		sprintf_s(str_s, "TIME: %0.2f s", glfwGetTime());
+		RenderText(str_s, 300, 1000, 0.6f, glm::vec3(1.0f, 1.0f, 1.0f), windowsWidth, windowsHeight);
 	   /* ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         */
+		if (camera->Position.y < -5.0f) {
+			char str_s[20];
+			sprintf_s(str_s, "GAME OVER");
+			RenderText(str_s, 500, windowsHeight/2, 2.5f, glm::vec3(1.0f, 1.0f, 1.0f), windowsWidth, windowsHeight);
+		}
         // 渲染天空
 		camera->UpdatePositionEachSecond(deltaTime);
 		manager->RenderSky(projection);
