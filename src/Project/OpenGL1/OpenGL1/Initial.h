@@ -48,6 +48,10 @@ public:
             glfwTerminate();
             return -1;
         }
+		// Set OpenGL options
+		
+
+		
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, getFrameBufferSize);
         glfwSetCursorPosCallback(window, mouse_callback);

@@ -36,6 +36,5 @@ unsigned int TextureFromMyFile(const char* path, const string& directory, bool g
 		std::cout << "Texture failed to load at path: " << path << std::endl;
 		stbi_image_free(data);
 	}
-
 	return textureID;
 }

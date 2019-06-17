@@ -31,7 +31,7 @@ public:
     glm::vec3 targetPos = glm::vec3(5.0f, 0.0f, 0.0f);
 
     // 判断是否飞天模式
-    bool flysky = true;
+    bool flysky = false;
     // 欧拉角
     float Yaw = -90.0f;
     float Pitch = 0.0f;

@@ -4,6 +4,7 @@ ShaderManager* ShaderManager::instance = NULL;
 void ShaderManager::InitialShader() {
     blockShader.setText("shadow.vs", "shadow.frag");
     simpleDepthShader.setText("shadow_mapping_depth.vs", "shadow_mapping_depth.frag");
+	textshader.setText("text.vs", "text.fs");
 
     // 设置平行光的参数
     blockShader.setVec3("dir", glm::vec3(-10.0f, 0.0f, 0.0f));

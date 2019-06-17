@@ -31,7 +31,7 @@ public:
     }
     Shader blockShader;
     Shader simpleDepthShader;
-
+	Shader textshader;
 private:
     static ShaderManager* instance;
     // ----------平行光参数----------------------------

@@ -21,7 +21,7 @@ bool PhysicsEngine::HorizontalCollisionDetect(glm::vec3 currentPos, glm::vec3 ne
 	int y_round = round(currentPos.y);
 	int y_min = y_round - 1;
 
-	// 进行8邻域水平检测
+	// �����߶ȣ�ÿ���߶�8�����������ײ���
 	/*
 		* * *
 		*   *
@@ -115,7 +115,6 @@ bool PhysicsEngine::WalkingVerticalCollisionDetect(glm::vec3 pos) {
     return true;
 }
 
-/* 第一版本垂直碰撞检测 */
 bool PhysicsEngine::VerticalCollisionDetect(glm::vec3 pos, float& downY) {
     ////cout << sizeof(m) << endl;
     //// if (isJumping) return true;
