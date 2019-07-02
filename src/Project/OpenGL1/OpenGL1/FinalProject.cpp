@@ -6,6 +6,7 @@
 #include "World.h"
 #include "ShaderManager.h"
 #include "TextRender.h"
+#include "SnowParticle.h"
 // ************************设定好的参数************************************
 const unsigned int windowsWidth = 2560;
 const unsigned int windowsHeight = 1440;
@@ -70,8 +71,9 @@ int main()
 	manager->InitCube();
 	// 渲染天空盒
 	manager->InitSky();
-
 	test_vao(windowsWidth, windowsHeight);
+
+	SnowParticle::SnowParticle mSnow;
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -99,7 +101,7 @@ int main()
 		shaderManager->simpleDepthShader.use();
 		shaderManager->simpleDepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
-		shaderManager->textshader.use();
+		//shaderManager->textshader.use();
 		
 		// 渲染深度贴图
 		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
@@ -134,6 +136,9 @@ int main()
 		// 画出物体
 		world->Render(shaderManager->blockShader);
 
+		glm::mat4 model_snow(1.0f);
+		glm::mat4 projection_snow = glm::ortho(-15.0, 15.0, 0.0, 15.0, -3.0, 100.0);
+		mSnow.Render(deltaTime, model_snow, view, projection_snow);
 		
 		char str[20];
 		sprintf_s(str, "Score = %d", world->GetScore());
@@ -152,6 +157,7 @@ int main()
         // 渲染天空
 		camera->UpdatePositionEachSecond(deltaTime);
 		manager->RenderSky(projection);
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
